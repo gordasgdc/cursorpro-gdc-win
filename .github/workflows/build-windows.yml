@@ -1,0 +1,43 @@
+name: Build CursorPro GDC (Windows)
+
+# Se ruleaza automat la orice push pe main, si manual din tab-ul Actions.
+# Acelasi tipar ca gdc-vault-win/build-windows.yml — scop principal:
+# `dotnet build` de pe Mac NU compileaza XAML->BAML (PresentationBuildTasks
+# e Windows-only), deci asta e SINGURA verificare reala ca legaturile XAML
+# (Click handlers, binding-uri) chiar functioneaza.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Descarca codul din repo
+        uses: actions/checkout@v4
+
+      - name: Instaleaza .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Compileaza CursorPro.Core
+        run: dotnet build src/CursorPro.Core/CursorPro.Core.csproj -c Release
+
+      - name: Compileaza CursorPro.Client (verifica XAML/BAML real)
+        run: dotnet build src/CursorPro.Client/CursorPro.Client.csproj -c Release
+
+      - name: Publica exe-ul (self-contained, win-x64)
+        run: dotnet publish src/CursorPro.Client/CursorPro.Client.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
+
+      - name: Compileaza instalatorul (Inno Setup - preinstalat pe runner-ul windows-latest)
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      - name: Incarca instalatorul ca artefact descarcabil
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          name: CursorProGDC-Windows-Installer
+          path: Output/CursorProGDCSetup.exe

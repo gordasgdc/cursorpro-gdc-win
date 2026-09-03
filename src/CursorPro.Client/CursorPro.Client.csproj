@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <!-- Iconița din system tray + meniul contextual folosesc
+         System.Windows.Forms.NotifyIcon — WPF nu are un echivalent nativ.
+         E clasă de framework (nu o dependință externă), consistent cu
+         cerința "implementare nativă, consum minim de resurse". -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Permite dotnet restore/build să rezolve TFM-ul windows și de pe
+         macOS — vezi același comentariu în GDCPluginManagerWin/GDCVaultWin.
+         Nu înlocuiește un build real pe Windows (XAML->BAML). -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>CursorPro.Client</RootNamespace>
+    <AssemblyName>CursorPro</AssemblyName>
+    <!-- Aceeași versiune ca pe Mac (Info.plist) la fiecare bump — Regula 14. -->
+    <Version>1.2.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CursorPro.Core\CursorPro.Core.csproj" />
+  </ItemGroup>
+
+</Project>
