@@ -1,0 +1,45 @@
+<Window x:Class="CursorPro.Client.PreferencesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Preferințe CursorPro GDC"
+        Width="560" Height="420"
+        MinWidth="480" MinHeight="360"
+        WindowStartupLocation="CenterScreen">
+    <TabControl x:Name="Tabs" Margin="12">
+        <TabItem x:Name="GeneralTab" Header="General">
+            <StackPanel Margin="16" TextElement.FontSize="13">
+                <TextBlock Text="CursorPro GDC" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <TextBlock x:Name="VersionText" Foreground="Gray" Margin="0,0,0,16"/>
+                <TextBlock TextWrapping="Wrap" Foreground="DarkOrange">
+                    Acest client Windows e la primul schelet — doar iconița din
+                    tray și Licența funcționează. Halo cursor, Spotlight, Desen,
+                    Zoom și Afișare taste rapide urmează, portate incremental de
+                    pe versiunea Mac.
+                </TextBlock>
+            </StackPanel>
+        </TabItem>
+        <TabItem x:Name="LicenseTab" Header="Licență">
+            <StackPanel Margin="16" TextElement.FontSize="13">
+                <TextBlock x:Name="StatusText" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                <TextBlock Text="Machine ID (trimite-l înainte de activare):" Margin="0,0,0,4"/>
+                <DockPanel Margin="0,0,0,16">
+                    <Button x:Name="CopyMachineIdButton" Content="Copiază" Width="80" DockPanel.Dock="Right" Click="CopyMachineIdButton_Click"/>
+                    <TextBox x:Name="MachineIdText" IsReadOnly="True" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
+                </DockPanel>
+
+                <Button x:Name="WhatsAppButton" Content="Cere activare pe WhatsApp" HorizontalAlignment="Left" Padding="8,4" Margin="0,0,0,16" Click="WhatsAppButton_Click"/>
+
+                <TextBlock Text="Cod de activare:" Margin="0,0,0,4"/>
+                <DockPanel Margin="0,0,0,8">
+                    <Button x:Name="ActivateButton" Content="Activează" Width="90" DockPanel.Dock="Right" Click="ActivateButton_Click"/>
+                    <TextBox x:Name="ActivationCodeText" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
+                </DockPanel>
+
+                <TextBlock x:Name="ErrorText" Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+                <Button x:Name="DeactivateButton" Content="Dezactivează licența" HorizontalAlignment="Left" Padding="8,4" Click="DeactivateButton_Click"/>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</Window>

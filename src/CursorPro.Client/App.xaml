@@ -1,0 +1,12 @@
+<Application x:Class="CursorPro.Client.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <!--
+        ShutdownMode="OnExplicitShutdown" — echivalentul Windows al
+        LSUIElement (Mac): fără StartupUri (nicio fereastră principală
+        se deschide automat), și WPF nu închide procesul doar pentru că o
+        fereastră (Preferințe) s-a închis. Ieșirea reală vine EXCLUSIV din
+        "Închide CursorPro GDC" din meniul tray (App.xaml.cs -> Shutdown()).
+    -->
+</Application>
