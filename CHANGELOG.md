@@ -3,6 +3,18 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.2.0-preview (2026-09-04) — Primul build public, marcat explicit Preview
+
+Publicat DELIBERAT ca preview (`gh release`, `--prerelease` scos ulterior
+ca `releases/latest/download/` să funcționeze — vezi titlul release-ului,
+care rămâne clar "Early Preview"), nu ca lansare completă: doar tray icon
++ Licență funcționează, exact ca în schelet (v1.2.0 de mai jos). Cerut
+explicit de Cristi ("să-l descarc ca și client, să văd cum funcționează")
+— fără să pretindă că Halo/Spotlight/Desen/Zoom există deja. Asset-uri:
+`CursorProGDC-Windows-1.2.0-preview.exe` (nume versionat, Regula 17) +
+`CursorProGDCSetup.exe` (nume stabil, pentru linkul `releases/latest/
+download/` de pe gordas.dev/cursorpro-gdc).
+
 ## v1.2.0 (2026-09-04) — Primul schelet
 
 Repo nou, arhitectură nativă C# / .NET 8 / WPF (aceeași bază ca
