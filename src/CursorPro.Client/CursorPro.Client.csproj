@@ -18,7 +18,15 @@
     <RootNamespace>CursorPro.Client</RootNamespace>
     <AssemblyName>CursorPro</AssemblyName>
     <!-- Aceeași versiune ca pe Mac (Info.plist) la fiecare bump — Regula 14. -->
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
+    <!-- PerMonitorV2 DPI awareness — vezi app.manifest. -->
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- WFAC010: analizatorul WinForms recomandă ApplicationHighDpiMode
+         în loc de manifest — greșit pentru acest proiect: aplicația de
+         bază e WPF (WinForms e folosit DOAR pentru NotifyIcon/Screen),
+         iar PerMonitorV2 pentru ferestrele overlay WPF se declară
+         corect prin app.manifest, nu prin API-ul WinForms. -->
+    <NoWarn>$(NoWarn);WFAC010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

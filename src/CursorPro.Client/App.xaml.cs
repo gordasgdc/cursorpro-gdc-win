@@ -14,15 +14,19 @@ public enum PreferencesTab
 /// Punctul de intrare — echivalentul AppDelegate.swift (Mac): construiește
 /// iconița din tray + meniul contextual, nicio fereastră principală.
 ///
-/// SCOP ACTUAL (2026-09-04, primul schelet): doar tray icon + Preferințe
-/// (General/Licență). Halo/Spotlight/Desen/Zoom/Afișare taste — NEPORTATE
-/// încă, vezi CHANGELOG.md "TODO paritate Windows" și CLAUDE.md pentru
-/// planul complet (Magnification API, overlay WS_EX_LAYERED, hook-uri
-/// globale de input).
+/// SCOP ACTUAL (2026-09-04, v1.3.0): tray icon + Preferințe
+/// (General/Licență) + Halo cursor + Spotlight (overlay transparent
+/// per-monitor, poziție cursor + taste modificator prin polling
+/// GetCursorPos/GetAsyncKeyState — vezi OverlayManager/InputMonitor).
+/// Desen/Zoom/Efecte de Clic/Afișare taste rapide — NEPORTATE încă, vezi
+/// CHANGELOG.md "TODO paritate Windows" și CLAUDE.md pentru planul
+/// complet (Magnification API pentru lupă, hook-uri de tastatură pentru
+/// scurtături).
 public partial class App : Application
 {
     private NotifyIcon? _trayIcon;
     private PreferencesWindow? _preferencesWindow;
+    private readonly OverlayManager _overlayManager = new();
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -35,6 +39,11 @@ public partial class App : Application
         LicenseManager.Shared.Changed += RebuildContextMenu;
 
         BuildTrayIcon();
+
+        // Halo + Spotlight — pornesc mereu la lansare, ca pe Mac
+        // (InputMonitor.start() e chemat necondiționat din AppDelegate;
+        // gating-ul pe licență se face în AppState/InputMonitor, nu aici).
+        _overlayManager.Start();
     }
 
     private void BuildTrayIcon()
@@ -97,6 +106,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _overlayManager.Stop();
         _trayIcon?.Dispose();
         base.OnExit(e);
     }

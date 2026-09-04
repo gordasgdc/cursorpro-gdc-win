@@ -131,10 +131,15 @@ acest lucru, nu ascunsă).
 **31. Paritate Mac/Windows imediată, în aceeași sesiune.** Orice schimbare
 de cod pe Mac care are echivalent Windows se portează 1:1 ÎN ACEEAȘI
 SESIUNE. Excepție reală pentru acest repo (nu o abatere): funcțiile
-Halo/Spotlight/Desen/Zoom/Taste rapide NECESITĂ un mediu Windows real
-pentru testare (overlay-uri `WS_EX_LAYERED`, hook-uri globale, Magnification
-API) — imposibil de verificat complet doar prin `dotnet build` de pe Mac.
-Marcat EXPLICIT ca "TODO paritate Windows" în CHANGELOG.md, nu ascuns.
+Desen/Zoom/Efecte de Clic/Afișare taste rapide NECESITĂ un mediu Windows
+real pentru testare (Magnification API, hook-uri de tastatură) —
+imposibil de verificat complet doar prin `dotnet build` de pe Mac. Marcat
+EXPLICIT ca "TODO paritate Windows" în CHANGELOG.md, nu ascuns. Halo +
+Spotlight AU fost portate (v1.3.0) fără mediu Windows real disponibil în
+sesiune — verificate doar prin `dotnet build`/CI (XAML→BAML real pe
+`windows-latest`), NU prin rulare efectivă; comportamentul overlay-ului
+pe hardware real (multi-monitor cu DPI diferit între ecrane, click-through
+efectiv) rămâne de confirmat de Cristi la prima rulare reală.
 
 ## [PARTEA 2: SPECIFICAȚII TEHNICE PROIECT]
 
@@ -162,18 +167,47 @@ Windows-only. `GDCVaultWin`/`CursorProWin` (acest repo) au nevoie de
 `net8.0-windows` de la început — verificat prin analogie cu
 `GDCVault.Core.csproj`, nu presupus.
 
-### Arhitectura NEPORTATĂ încă (planul complet, pentru sesiunea următoare)
+### Overlay transparent per-monitor (Halo + Spotlight) — PORTAT, v1.3.0
+`OverlayManager` creează câte o `OverlayWindow` (WPF, `WindowStyle=None`,
+`AllowsTransparency=True`) per `System.Windows.Forms.Screen.AllScreens`,
+apoi setează `WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW |
+WS_EX_NOACTIVATE` pe HWND (P/Invoke `GetWindowLong`/`SetWindowLong`) —
+click-through, la fel ca `ignoresMouseEvents = true` pe Mac. Fiecare
+fereastră conține un `OverlaySurface` (`FrameworkElement.OnRender`,
+echivalentul `NSView.draw(_:)`) care desenează Halo + Spotlight. Suport
+DPI per-monitor: `PerMonitorV2` în `app.manifest` (nou), factor de
+scalare inițial aproximat din DPI-ul ecranului primar
+(`Graphics.FromHwnd(IntPtr.Zero).DpiX`) — **neverificat pe un setup real
+cu procente de scalare DIFERITE între ecrane** (ex. laptop 150% + monitor
+extern 100%); pe un asemenea setup overlay-ul de pe ecranul secundar ar
+putea fi ușor dezaliniat până WPF își recorectează layout-ul (comportament
+automat .NET Core WPF la `WM_DPICHANGED`, dependent de driverul de
+grafică — de confirmat de Cristi).
+
+### Input global (poziție cursor + taste modificator) — PORTAT, v1.3.0,
+### arhitectură DIFERITĂ deliberat față de plan
+Planul inițial (mai jos, istoric) prevedea `SetWindowsHookEx(WH_MOUSE_LL/
+WH_KEYBOARD_LL)` — echivalentul direct al `NSEvent.
+addGlobalMonitorForEvents`. Implementat în schimb cu interogare directă
+de stare (`InputMonitor.Tick()`, chemat o dată/cadru de `OverlayManager`):
+`GetCursorPos` (poziție) + `GetAsyncKeyState` (taste modificator ținute
+apăsat). Motiv: pentru "poziție + e ținută apăsată tasta X acum" nu e
+nevoie de o subscripție la evenimente — o interogare directă e mai
+simplă, fără delegate de hook de ținut în viață și fără capcanele de
+gestionare a lui `SetWindowsHookEx` pe un thread cu buclă de mesaje.
+Hook-urile reale (`WH_KEYBOARD_LL`) rămân necesare DOAR pentru
+funcționalitatea viitoare care are nevoie de evenimente punctuale (apăsare
+de tastă, nu doar stare ținută) — vezi Desen (scurtături unealtă) și
+Afișare Taste Rapide mai jos.
+
+### Arhitectura ÎNCĂ NEPORTATĂ (planul complet, pentru sesiunea următoare)
 Fiecare din următoarele necesită un mediu Windows real pentru
 testare/verificare, nu doar `dotnet build` de pe Mac (Regula 31,
 excepția documentată mai sus):
-- **Overlay transparent per-monitor** (Halo/Spotlight/Desen) — o fereastră
-  WPF per ecran, `WS_EX_LAYERED | WS_EX_TRANSPARENT` (click-through, la
-  fel ca `ignoresMouseEvents = true` pe Mac), poziționată pe fiecare
-  `System.Windows.Forms.Screen.AllScreens`, cu suport per-monitor DPI
-  (`PerMonitorV2` în `app.manifest` — de creat).
-- **Input global** — echivalentul `NSEvent.addGlobalMonitorForEvents`:
-  `SetWindowsHookEx(WH_MOUSE_LL)`/`WH_KEYBOARD_LL` (P/Invoke,
-  `user32.dll`) — NU există un echivalent managed nativ în WPF.
+- **Desen** (freehand/săgeată/încercuire/cadru) — extinde `OverlaySurface`
+  cu randarea traseelor (model de date deja proiectat pe Mac, de portat
+  în `AppState`/un nou `DrawItem`), plus `WH_KEYBOARD_LL` real pentru
+  scurtăturile reconfigurabile de schimbare unealtă (`Alt+1..4` pe Mac).
 - **Zoom/lupă** — Windows Magnification API (`Magnification.dll`,
   P/Invoke: `MagInitialize`, `MagSetWindowSource`, fereastră magnifier
   child) în loc de ScreenCaptureKit (Mac). Alternativ (mai simplu, mai
@@ -181,8 +215,12 @@ excepția documentată mai sus):
   fereastră mică — de evaluat care se potrivește mai bine cerinței de
   "CPU 0% la staționare".
 - **Efecte de Clic / Afișare Taste / Preseturi Focus / Semnal
-  multi-display** (v1.1.0 Mac) — toate depind de InputMonitor +
-  OverlayView de mai sus; vin în același pas.
+  multi-display** (v1.1.0 Mac) — Efectele de Clic + Semnalul multi-display
+  se pot adăuga direct pe `InputMonitor.Tick()` existent (clic stânga/
+  dreapta se pot detecta tot prin `GetAsyncKeyState` polling, fără hook);
+  Afișarea Tastelor Rapide are nevoie de `WH_KEYBOARD_LL` real (evenimente
+  punctuale de apăsare, nu stare), la fel ca scurtăturile de Desen de mai
+  sus.
 - **Update Checker + Self-Updater** — port direct din `GDCVaultWin`
   (deja funcțional acolo), doar schimbat URL-ul de releases la
   `gordasgdc/cursorpro-gdc-win`.
@@ -201,3 +239,20 @@ ca arhitectură — fără dependința de `PrivateCatalogAuth` a
 `dotnet build` (`EnableWindowsTargeting=true`, de pe Mac) — 0 erori pe
 Core și Client. NU verificat încă: XAML→BAML real (necesită Windows/CI),
 tray icon real la runtime, instalatorul compilat efectiv.
+
+**2026-09-04 — v1.3.0: Halo cursor + Spotlight portate.** Cerut de Cristi
+("continua cu Cursor pro pentru windows ca nu imi apare nimica in
+windows" — după ce a rulat v1.2.0-preview și a văzut mesajul explicit
+"urmează" din tab-ul General). Adăugat: `Core/State/AppState.cs` (port
+parțial, DOAR Halo+Spotlight — restul câmpurilor din AppState.swift
+rămân neportate până vine rândul funcționalității lor), `Core/Services/
+InputMonitor.cs` (polling, vezi secțiunea de arhitectură de mai sus),
+`Client/OverlaySurface.cs` + `OverlayWindow.xaml(.cs)` + `OverlayManager.
+cs` (overlay transparent per-monitor), tab nou „Halo & Spotlight" în
+`PreferencesWindow.xaml(.cs)`, `app.manifest` (PerMonitorV2, nou fișier).
+Verificat cu `dotnet build` pe ambele proiecte (0 erori, 0 avertismente
+după suprimarea documentată a WFAC010) — NU verificat prin rulare reală
+pe Windows (vezi excepția Regula 31 actualizată mai sus); CI
+(`build-windows.yml`, `windows-latest`) verifică suplimentar compilarea
+reală XAML→BAML, dar tot nu comportamentul la runtime al overlay-ului.
+Versiune 1.2.0 → 1.3.0 (MINOR — funcționalitate nouă, nu doar fix).
