@@ -344,3 +344,26 @@ confirmat scriptibil, deoarece proba/licența funcționează). Diagnoza
 reală a Spotlight rămâne DESCHISĂ — depinde de conținutul logului din
 ORICARE dintre cele două locații, la următorul test. Versiune 1.4.0 →
 1.4.1 (PATCH — fix diagnostic, nicio funcționalitate nouă).
+
+**2026-09-04 — v1.4.2: CAUZA REALĂ găsită — `DispatcherPriority.Render`.**
+Cristi: „observ ca merg atunci cand apas pe click mouse" — indiciul care
+a rezolvat tot. `OverlayManager`-ul folosea
+`new DispatcherTimer(DispatcherPriority.Render)` pentru bucla de 60fps
+care cheamă `InputMonitor.Tick()` (poziție cursor + taste ținute) și
+redesenează overlay-urile. Presupunere greșită: am tratat
+`DispatcherPriority.Render` ca pe un simplu nivel de prioritate pentru un
+timer obișnuit (WM_TIMER, procesat oricum de bucla de mesaje). De fapt,
+`Render` leagă operația de PASUL DE RANDARE al compozitorului WPF, care
+rulează doar când ceva din arborele vizual chiar are nevoie să fie
+redesenat — nu la interval fix, indiferent de restul sistemului. Cu
+overlay-urile noastre — nimic altceva nu le cere randare —, bucla se
+auto-bloca la stare idle; un clic
+de mouse ORIUNDE pe sistem (prin DWM) forța un pas de randare, dând
+impresia falsă că "funcționează la clic". Fix: `DispatcherPriority.
+Normal` — coada obișnuită de mesaje, independentă de randare. Aceasta e
+cauza reală și pentru "Spotlight tot nu merge" (v1.3.2) ȘI pentru log-ul
+lipsă (v1.4.1, deși linia de pornire a aplicației ar fi trebuit oricum
+să apară necondiționat — posibil o cauză separată, reală, de investigat
+dacă tot lipsește după acest fix). Verificat cu `dotnet build` — NU
+verificat prin rulare reală. Versiune 1.4.1 → 1.4.2 (PATCH — fix real,
+nicio funcționalitate nouă).

@@ -55,7 +55,19 @@ public sealed class OverlayManager
             DebugLog.Log($"  ecran '{screen.DeviceName}': bounds={screen.Bounds}, fereastră DIP={widthDip:F0}x{heightDip:F0}");
         }
 
-        _timer = new DispatcherTimer(DispatcherPriority.Render)
+        // BUG REAL (raportat de Cristi, 2026-09-04: "observ ca merg atunci
+        // cand apas pe click mouse" — Spotlight/Zoom păreau să funcționeze
+        // doar în jurul unui clic de mouse). Cauză: `DispatcherPriority.
+        // Render` leagă acest timer de PASUL DE RANDARE al WPF, care rulează
+        // doar când ceva din arborele vizual chiar are nevoie să fie
+        // redesenat — NU e un ceas de interval normal. Cu overlay-urile
+        // noastre needing exact acest timer ca să se invalideze singure,
+        // bucla practic se bloca la stare idle, și un clic de mouse oriunde
+        // pe sistem forța temporar un pas de randare (prin DWM), dând
+        // impresia că "merge la clic". Fix: `DispatcherPriority.Normal` —
+        // procesat prin coada obișnuită de mesaje (WM_TIMER), independent
+        // de randare, la fel ca orice DispatcherTimer obișnuit.
+        _timer = new DispatcherTimer(DispatcherPriority.Normal)
         {
             Interval = TimeSpan.FromSeconds(1.0 / 60.0),
         };
