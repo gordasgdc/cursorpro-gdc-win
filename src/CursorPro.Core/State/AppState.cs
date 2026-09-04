@@ -12,9 +12,10 @@ public enum HaloStyle { Ring, Filled, Crosshair }
 public enum ModifierKey { Alt, Control, Shift, Windows }
 
 /// Stare partajată, în memorie — oglindă AppState.swift (Mac). Portate
-/// complet (v1.3.0): Halo + Spotlight, inclusiv gating-ul pe licență.
-/// NEPORTATE încă, deliberat: Desen, Zoom, Efecte de Clic, Afișare Taste
-/// Rapide, Preseturi Focus, Semnal multi-display — vezi CHANGELOG.md.
+/// complet: Halo + Spotlight (v1.3.0), Zoom (v1.4.0) — toate cu gating pe
+/// licență. NEPORTATE încă, deliberat: Desen, Efecte de Clic, Afișare
+/// Taste Rapide, Preseturi Focus, Semnal multi-display — vezi
+/// CHANGELOG.md.
 /// La fel ca pe Mac, NU e persistată între lansări (doar Licența și Limba
 /// sunt persistate, în LicenseManager/Localization) — pornește mereu din
 /// valorile implicite de mai jos.
@@ -32,6 +33,7 @@ public sealed class AppState
 
     // MARK: - Flaguri de mod (comandate de tastele modificator ținute apăsat)
     public bool IsSpotlightActive { get; set; }
+    public bool IsZoomActive { get; set; }
 
     // MARK: - Aspect Halo
     public bool HaloEnabled { get; set; } = true;
@@ -45,6 +47,21 @@ public sealed class AppState
     /// 0 = complet transparent, 1 = complet negru.
     public double SpotlightDimOpacity { get; set; } = 0.75;
 
+    // MARK: - Aspect Zoom (lupă)
+    /// Cât de puternic mărește lupa — factor direct, ales de utilizator
+    /// (vezi ZoomFactorMin/Max mai jos). Raza capturată se DERIVĂ din
+    /// acest factor + diametrul fix al ferestrei lupei — NU se
+    /// controlează independent, la fel ca pe Mac (`zoomRadius`,
+    /// AppState.swift).
+    public float ZoomFactor { get; set; } = 3;
+    public const float ZoomFactorMin = 1.1f;
+    public const float ZoomFactorMax = 12f;
+    /// Diametrul fix al ferestrei lupei, în DIP.
+    public const float ZoomWindowDiameter = 360;
+    /// Raza, în DIP, a regiunii de ecran capturate în jurul cursorului.
+    public float ZoomRadius => ZoomWindowDiameter / (2 * ZoomFactor);
+
     // MARK: - Legături de taste
     public ModifierKey SpotlightKey { get; set; } = ModifierKey.Control;
+    public ModifierKey ZoomKey { get; set; } = ModifierKey.Shift;
 }

@@ -17,10 +17,12 @@ namespace CursorPro.Client;
 public sealed class OverlayManager
 {
     private readonly List<OverlayWindow> _windows = new();
+    private readonly ZoomController _zoom = new();
     private DispatcherTimer? _timer;
 
     public void Start()
     {
+        _zoom.Start();
         // Factor DPI aproximat de pe ecranul primar, aplicat tuturor
         // ecranelor la poziționarea inițială — vezi nota din
         // OverlaySurface.DpiScale despre configurațiile multi-monitor cu
@@ -68,6 +70,7 @@ public sealed class OverlayManager
         {
             window.Surface.Refresh();
         }
+        _zoom.Tick();
     }
 
     public void Stop()
@@ -79,5 +82,6 @@ public sealed class OverlayManager
             window.Close();
         }
         _windows.Clear();
+        _zoom.Stop();
     }
 }

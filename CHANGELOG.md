@@ -3,6 +3,20 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.4.0 (2026-09-04) — Zoom (lupă)
+
+**Ce e nou**: o lupă circulară care urmărește cursorul, cu conținut LIVE
+(nu capturi statice) — folosește Windows Magnification API, același
+mecanism ca Lupa de accesibilitate nativă din Windows. Se activează
+ținând apăsată o tastă configurabilă (implicit Shift), nivelul de mărire
+și tasta se schimbă din Preferințe → tab nou „Zoom".
+
+**Neportat încă în acest pas** (explicit, vezi CLAUDE.md): ajustare live
+a nivelului de mărire cu scroll (ca pe Mac — necesită un hook real de
+mouse), bordură/reticulă/blocare poziție, citire culoare pixel. Toate
+depind de un hook de tastatură/mouse real, care vine împreună cu Desenul
+și Afișarea Tastelor Rapide.
+
 ## v1.3.2 (2026-09-04) — Fix: Spotlight nu se activa + log de diagnostic
 
 Raportat de Cristi pe hardware real: Halo funcționa, dar Spotlight

@@ -61,6 +61,9 @@ public partial class PreferencesWindow : Window
         SpotlightDimSlider.Value = state.SpotlightDimOpacity;
         SpotlightKeyCombo.SelectedIndex = (int)state.SpotlightKey;
 
+        ZoomFactorSlider.Value = state.ZoomFactor;
+        ZoomKeyCombo.SelectedIndex = (int)state.ZoomKey;
+
         _loadingHaloControls = false;
     }
 
@@ -83,6 +86,9 @@ public partial class PreferencesWindow : Window
         state.SpotlightRadius = (float)SpotlightRadiusSlider.Value;
         state.SpotlightDimOpacity = SpotlightDimSlider.Value;
         if (SpotlightKeyCombo.SelectedIndex >= 0) state.SpotlightKey = (ModifierKey)SpotlightKeyCombo.SelectedIndex;
+
+        state.ZoomFactor = (float)ZoomFactorSlider.Value;
+        if (ZoomKeyCombo.SelectedIndex >= 0) state.ZoomKey = (ModifierKey)ZoomKeyCombo.SelectedIndex;
     }
 
     public void SelectTab(PreferencesTab tab)
