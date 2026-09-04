@@ -25,7 +25,13 @@ public partial class PreferencesWindow : Window
         Color.FromArgb(255, 255, 255, 255), // Alb
     };
 
-    private bool _loadingHaloControls;
+    // Implicit `true` (nu doar setat în LoadHaloControls()) — Sliderele/
+    // ComboBox-urile din XAML își trag propriul eveniment (ValueChanged/
+    // SelectionChanged) chiar în timpul InitializeComponent() (parsare
+    // BAML), ÎNAINTE ca restul câmpurilor numite (x:Name) să fie
+    // asignate — un handler care le citește pe toate ar arunca
+    // NullReferenceException în acel moment. Vezi raportul de crash.
+    private bool _loadingHaloControls = true;
 
     public PreferencesWindow()
     {
