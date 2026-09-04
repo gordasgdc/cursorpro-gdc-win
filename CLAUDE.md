@@ -256,3 +256,20 @@ pe Windows (vezi excepția Regula 31 actualizată mai sus); CI
 (`build-windows.yml`, `windows-latest`) verifică suplimentar compilarea
 reală XAML→BAML, dar tot nu comportamentul la runtime al overlay-ului.
 Versiune 1.2.0 → 1.3.0 (MINOR — funcționalitate nouă, nu doar fix).
+
+**2026-09-04 — v1.3.1: fix crash real, confirmat pe Windows.** Cristi a
+instalat v1.3.0 și a raportat un `NullReferenceException` la prima
+deschidere a Preferințelor (stack trace complet, din dialogul JIT
+Debugger al Windows) — exact genul de bug pe care Regula 31 spunea că nu
+poate fi prins doar prin `dotnet build` de pe Mac. Cauză reală:
+`PreferencesWindow.HaloControl_Changed` citea TOATE controalele Halo/
+Spotlight, dar `Slider`-ele își declanșează `ValueChanged` (prin
+coerce pe Minimum/Maximum) chiar în timpul `InitializeComponent()`
+(parsare BAML) — înainte ca restul câmpurilor `x:Name` din aceeași
+fereastră să fie asignate. Garda `_loadingHaloControls` exista, dar
+pornea `false` și era setată `true` abia în `LoadHaloControls()`, deci
+nu proteja evenimentele declanșate de InitializeComponent() însuși.
+Fix: valoare implicită `true` la declarația câmpului. Verificat cu
+`dotnet build` (0 erori/avertismente) — comportamentul real (fără
+crash la deschidere) rămâne de reconfirmat de Cristi cu noul build.
+Versiune 1.3.0 → 1.3.1 (PATCH — fix, nicio funcționalitate nouă).

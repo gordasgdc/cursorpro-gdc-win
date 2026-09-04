@@ -3,6 +3,14 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.3.1 (2026-09-04) — Fix: crash la deschiderea Preferințelor
+
+Prima deschidere a ferestrei de Preferințe (după instalarea v1.3.0)
+arunca `NullReferenceException` la pornire — controalele Halo & Spotlight
+(sloidere/combo-uri) își declanșau propriul eveniment chiar în timpul
+construirii ferestrei, înainte ca toate să fie gata, iar handler-ul le
+citea pe toate deodată. Confirmat și reprodus pe Windows real, remediat.
+
 ## v1.3.0 (2026-09-04) — Halo cursor + Spotlight, reale
 
 **Ce e nou**: Halo cursor (inel/umplut/cruce, culoare/diametru/grosime
