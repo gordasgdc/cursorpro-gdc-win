@@ -3,6 +3,15 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.4.2 (2026-09-04) — Fix real: Spotlight/Zoom acum răspund constant
+
+Cauza reală, în sfârșit găsită: bucla internă care urmărește cursorul și
+tastele ținute era legată greșit de pasul de randare al interfeței (care
+rulează doar când ceva vizual se schimbă), nu de un ceas normal — de-aia
+Halo/Spotlight/Zoom păreau să "prindă viață" doar când dădeai
+clic din mouse. Corectat: bucla rulează acum constant, la ~60 cadre pe
+secundă, indiferent de altă activitate.
+
 ## v1.4.1 (2026-09-04) — Fix: log de diagnostic negăsit
 
 Fișierul `cursorpro_debug.log` (adăugat în v1.3.2) nu apărea deloc pe
