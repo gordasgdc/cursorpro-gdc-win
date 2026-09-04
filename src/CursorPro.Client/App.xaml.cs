@@ -32,6 +32,8 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        DebugLog.Log($"CursorPro GDC {AppVersion} pornit — vezi %USERPROFILE%\\Desktop\\cursorpro_debug.log pentru diagnostic.");
+
         // Pornește proba/încarcă licența salvată o singură dată, la
         // lansare — la fel ca LicenseManager.shared pe Mac (init lazy,
         // primul acces îl declanșează).

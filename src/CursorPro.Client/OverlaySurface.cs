@@ -29,6 +29,18 @@ public sealed class OverlaySurface : FrameworkElement
     /// de scalare DIFERITE între ecrane, neverificat pe hardware real).
     public double DpiScale { get; set; } = 1.0;
 
+    /// Lățimea/înălțimea ecranului (DIP) — setate explicit de OverlayManager
+    /// din `screen.Bounds` la creare, NU citite din `ActualWidth`/
+    /// `ActualHeight`: acestea depind de un pas de layout WPF finalizat
+    /// (Measure/Arrange), care nu e garantat să fi rulat deja la primele
+    /// cadre after `Show()` — un dreptunghi Spotlight dimensionat greșit
+    /// (0 sau foarte mic) ar fi practic invizibil, spre deosebire de Halo,
+    /// care nu depinde deloc de dimensiunea elementului (desenat relativ
+    /// la cursor). Valorile astea sunt cunoscute exact dinainte, fără să
+    /// depindă de timing-ul intern al WPF.
+    public double ScreenWidthDip { get; set; }
+    public double ScreenHeightDip { get; set; }
+
     /// Chemat de OverlayManager de ~60 ori/secundă — echivalentul
     /// `needsDisplay = true` din bucla de refresh a OverlayView (Mac).
     public void Refresh() => InvalidateVisual();
@@ -100,7 +112,7 @@ public sealed class OverlaySurface : FrameworkElement
         // "Gaură" circulară: dreptunghiul ecranului XOR cercul din jurul
         // cursorului — echivalentul exact al CGMutablePath (addRect +
         // addEllipse, fillPath(using: .evenOdd)) din OverlayView.swift.
-        var outer = new RectangleGeometry(new Rect(0, 0, Math.Max(ActualWidth, 1), Math.Max(ActualHeight, 1)));
+        var outer = new RectangleGeometry(new Rect(0, 0, Math.Max(ScreenWidthDip, 1), Math.Max(ScreenHeightDip, 1)));
         var hole = new EllipseGeometry(p, r, r);
         var combined = new CombinedGeometry(GeometryCombineMode.Xor, outer, hole);
         dc.DrawGeometry(brush, null, combined);

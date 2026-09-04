@@ -31,19 +31,26 @@ public sealed class OverlayManager
             dpiScale = g.DpiX / 96.0;
         }
 
+        DebugLog.Log($"OverlayManager.Start: dpiScale={dpiScale:F2}, {Screen.AllScreens.Length} ecran(e)");
+
         foreach (var screen in Screen.AllScreens)
         {
+            double widthDip = screen.Bounds.Width / dpiScale;
+            double heightDip = screen.Bounds.Height / dpiScale;
             var window = new OverlayWindow
             {
                 Left = screen.Bounds.Left / dpiScale,
                 Top = screen.Bounds.Top / dpiScale,
-                Width = screen.Bounds.Width / dpiScale,
-                Height = screen.Bounds.Height / dpiScale,
+                Width = widthDip,
+                Height = heightDip,
             };
             window.Surface.ScreenOrigin = screen.Bounds.Location;
             window.Surface.DpiScale = dpiScale;
+            window.Surface.ScreenWidthDip = widthDip;
+            window.Surface.ScreenHeightDip = heightDip;
             window.Show();
             _windows.Add(window);
+            DebugLog.Log($"  ecran '{screen.DeviceName}': bounds={screen.Bounds}, fereastră DIP={widthDip:F0}x{heightDip:F0}");
         }
 
         _timer = new DispatcherTimer(DispatcherPriority.Render)

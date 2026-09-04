@@ -79,9 +79,14 @@
                     <Slider x:Name="SpotlightDimSlider" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Minimum="0" Maximum="1" ValueChanged="HaloControl_Changed"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Tastă activare" VerticalAlignment="Center"/>
+                    <!-- Ordinea TREBUIE să fie identică cu enum ModifierKey (Core/State/
+                         AppState.cs): Alt, Control, Shift, Windows — SelectedIndex se
+                         mapează direct 1:1 pe valoarea enum-ului (vezi LoadHaloControls/
+                         HaloControl_Changed). Bug real găsit și corectat în v1.3.2: ordinea
+                         era Ctrl/Alt/Shift/Windows, decalată cu o poziție față de enum. -->
                     <ComboBox x:Name="SpotlightKeyCombo" Grid.Row="2" Grid.Column="1" SelectionChanged="HaloControl_Changed">
-                        <ComboBoxItem Content="Ctrl"/>
                         <ComboBoxItem Content="Alt"/>
+                        <ComboBoxItem Content="Ctrl"/>
                         <ComboBoxItem Content="Shift"/>
                         <ComboBoxItem Content="Windows"/>
                     </ComboBox>
