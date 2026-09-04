@@ -3,6 +3,28 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.3.0 (2026-09-04) — Halo cursor + Spotlight, reale
+
+**Ce e nou**: Halo cursor (inel/umplut/cruce, culoare/diametru/grosime
+configurabile) și Spotlight (întunecă ecranul în jurul cursorului, se
+activează ținând apăsată o tastă configurabilă — implicit Ctrl) —
+funcționează acum pe Windows, pe TOATE ecranele conectate, exact ca pe
+Mac. Configurabile din Preferințe → tab nou „Halo & Spotlight".
+
+**Arhitectură** (adaptare deliberată față de Mac, vezi CLAUDE.md):
+poziția cursorului și starea tastelor modificator se citesc direct
+(`GetCursorPos`/`GetAsyncKeyState`, interogare, nu abonare la evenimente)
+în loc de hook-uri globale (`SetWindowsHookEx`) — echivalent funcțional
+cu monitoarele globale NSEvent de pe Mac, pentru acest caz de folosire,
+fără capcanele de gestionare a hook-urilor native. Câte o fereastră
+transparentă, click-through, per ecran conectat
+(`WS_EX_LAYERED`/`WS_EX_TRANSPARENT`), cu suport DPI per-monitor
+(`PerMonitorV2` în `app.manifest`, nou).
+
+**Neschimbat / tot NEPORTAT**: Desen, Zoom (lupă), Efecte de Clic,
+Afișare Taste Rapide, Preseturi Focus, Semnal multi-display — vezi lista
+completă mai jos (v1.2.0).
+
 ## v1.2.0-preview (2026-09-04) — Primul build public, marcat explicit Preview
 
 Publicat DELIBERAT ca preview (`gh release`, `--prerelease` scos ulterior

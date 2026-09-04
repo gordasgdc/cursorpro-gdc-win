@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+  <!--
+    PerMonitorV2: fiecare OverlayWindow (câte unul per ecran conectat)
+    trebuie poziţionat/dimensionat pixel-perfect pe ecranul lui, chiar
+    şi când monitoarele au procente de scalare DPI diferite (ex. laptop
+    150% + monitor extern 100%). Fără acest manifest, WPF e "System DPI
+    aware" implicit şi randează totul la un singur factor de scalare,
+    ceea ce ar dezalinia overlay-ul pe orice ecran secundar cu altă
+    scalare — vezi CursorProWin/CLAUDE.md, "Overlay transparent
+    per-monitor".
+  -->
+  <application xmlns="urn:schemas-microsoft-com:asm.v3">
+    <windowsSettings>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2</dpiAwareness>
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
+    </windowsSettings>
+  </application>
+</assembly>

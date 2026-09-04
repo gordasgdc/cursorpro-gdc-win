@@ -11,11 +11,82 @@
                 <TextBlock Text="CursorPro GDC" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4"/>
                 <TextBlock x:Name="VersionText" Foreground="Gray" Margin="0,0,0,16"/>
                 <TextBlock TextWrapping="Wrap" Foreground="DarkOrange">
-                    Acest client Windows e la primul schelet — doar iconița din
-                    tray și Licența funcționează. Halo cursor, Spotlight, Desen,
-                    Zoom și Afișare taste rapide urmează, portate incremental de
-                    pe versiunea Mac.
+                    Halo cursor și Spotlight funcționează (vezi tab-ul dedicat).
+                    Desen, Zoom (lupă) și Afișare taste rapide urmează, portate
+                    incremental de pe versiunea Mac.
                 </TextBlock>
+            </StackPanel>
+        </TabItem>
+        <TabItem x:Name="HaloTab" Header="Halo &amp; Spotlight">
+            <StackPanel Margin="16" TextElement.FontSize="13">
+                <TextBlock Text="Halo cursor" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <CheckBox x:Name="HaloEnabledCheck" Content="Activează Halo" Margin="0,0,0,12" Checked="HaloControl_Changed" Unchecked="HaloControl_Changed"/>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Stil" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="HaloStyleCombo" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" SelectionChanged="HaloControl_Changed">
+                        <ComboBoxItem Content="Inel"/>
+                        <ComboBoxItem Content="Umplut"/>
+                        <ComboBoxItem Content="Cruce"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Culoare" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="HaloColorCombo" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" SelectionChanged="HaloControl_Changed">
+                        <ComboBoxItem Content="Galben"/>
+                        <ComboBoxItem Content="Roșu"/>
+                        <ComboBoxItem Content="Verde"/>
+                        <ComboBoxItem Content="Albastru"/>
+                        <ComboBoxItem Content="Roz"/>
+                        <ComboBoxItem Content="Alb"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Diametru" VerticalAlignment="Center"/>
+                    <Slider x:Name="HaloDiameterSlider" Grid.Row="2" Grid.Column="1" Margin="0,0,0,8" Minimum="16" Maximum="80" ValueChanged="HaloControl_Changed"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Grosime linie" VerticalAlignment="Center"/>
+                    <Slider x:Name="HaloLineWidthSlider" Grid.Row="3" Grid.Column="1" Minimum="1" Maximum="8" ValueChanged="HaloControl_Changed"/>
+                </Grid>
+
+                <Separator Margin="0,8,0,16"/>
+
+                <TextBlock Text="Spotlight (întunecă ecranul în jurul cursorului)" FontWeight="SemiBold" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Rază" VerticalAlignment="Center"/>
+                    <Slider x:Name="SpotlightRadiusSlider" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Minimum="60" Maximum="400" ValueChanged="HaloControl_Changed"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Întunecare" VerticalAlignment="Center"/>
+                    <Slider x:Name="SpotlightDimSlider" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Minimum="0" Maximum="1" ValueChanged="HaloControl_Changed"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Tastă activare" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="SpotlightKeyCombo" Grid.Row="2" Grid.Column="1" SelectionChanged="HaloControl_Changed">
+                        <ComboBoxItem Content="Ctrl"/>
+                        <ComboBoxItem Content="Alt"/>
+                        <ComboBoxItem Content="Shift"/>
+                        <ComboBoxItem Content="Windows"/>
+                    </ComboBox>
+                </Grid>
+                <TextBlock Text="Ține apăsată tasta aleasă ca să activezi Spotlight." Foreground="Gray" Margin="0,8,0,0" TextWrapping="Wrap"/>
             </StackPanel>
         </TabItem>
         <TabItem x:Name="LicenseTab" Header="Licență">
