@@ -66,6 +66,16 @@ public static class InputMonitor
         // (InputMonitor.swift, cazul .flagsChanged). Fereastra de
         // Preferinţe → Licenţă funcţionează oricând, neschimbat.
         var unlocked = LicenseManager.Shared.IsUnlocked;
-        state.IsSpotlightActive = unlocked && IsHeld(state.SpotlightKey);
+        var wasActive = state.IsSpotlightActive;
+        var keyHeld = IsHeld(state.SpotlightKey);
+        state.IsSpotlightActive = unlocked && keyHeld;
+
+        // Log DOAR la tranziții (nu la fiecare cadru, ~60/sec — ar inunda
+        // fișierul) — ajută să diagnosticăm dacă tasta chiar e detectată
+        // ca ținută (GetAsyncKeyState) sau dacă licența blochează modul.
+        if (state.IsSpotlightActive != wasActive)
+        {
+            DebugLog.Log($"Spotlight {(state.IsSpotlightActive ? "ACTIVAT" : "dezactivat")} — tastă={state.SpotlightKey}, ținută={keyHeld}, deblocat={unlocked}");
+        }
     }
 }

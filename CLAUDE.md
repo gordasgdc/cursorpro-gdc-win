@@ -273,3 +273,18 @@ Fix: valoare implicită `true` la declarația câmpului. Verificat cu
 `dotnet build` (0 erori/avertismente) — comportamentul real (fără
 crash la deschidere) rămâne de reconfirmat de Cristi cu noul build.
 Versiune 1.3.0 → 1.3.1 (PATCH — fix, nicio funcționalitate nouă).
+
+**2026-09-04 — v1.3.2: fix Spotlight + primul log de diagnostic activ.**
+Cristi a confirmat pe Windows real: „halo functioneaza spotline nu".
+Fără acces la Windows, diagnostic prin inspecție de cod (nu prin
+reproducere) — două cauze reale identificate și corectate (vezi
+CHANGELOG.md pentru detalii). Adăugat și `DebugLog.Log(...)` activ în
+`OverlayManager.Start()` (ecrane detectate + DPI) și
+`InputMonitor.Tick()` (tranziții Spotlight activat/dezactivat, cu
+starea reală a tastei) — `DebugLog.cs` exista deja de la schelet dar nu
+era apelat niciunde. Motivul exact pentru care Spotlight nu apărea NU
+e 100% confirmat fără o rulare reală după acest fix — dacă tot nu
+funcționează, `cursorpro_debug.log` (Desktop) ar trebui să arate dacă
+tasta e detectată ca ținută sau nu, ceea ce restrânge mult următoarea
+ipoteză. Versiune 1.3.1 → 1.3.2 (PATCH — fix + diagnostic, nicio
+funcționalitate nouă).

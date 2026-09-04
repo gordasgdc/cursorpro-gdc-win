@@ -3,6 +3,30 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.3.2 (2026-09-04) — Fix: Spotlight nu se activa + log de diagnostic
+
+Raportat de Cristi pe hardware real: Halo funcționa, dar Spotlight
+(ținere Ctrl) nu făcea nimic vizibil. Două cauze reale găsite prin
+inspecție de cod (neconfirmate încă printr-o rulare reală, dar corectate
+pe baza analizei):
+
+1. Dreptunghiul de întunecare Spotlight era dimensionat după
+   `ActualWidth`/`ActualHeight` ale suprafeței — valori care depind de un
+   pas de layout WPF ce s-ar putea să nu fi rulat încă la primele cadre,
+   spre deosebire de Halo, care nu depinde deloc de dimensiunea
+   elementului. Înlocuit cu dimensiunile ecranului, cunoscute exact
+   dinainte (nu mai depind de timing-ul WPF).
+2. Combo-ul „Tastă activare" din Preferințe avea ordinea
+   Ctrl/Alt/Shift/Windows, decalată cu o poziție față de enum-ul real
+   (`Alt, Control, Shift, Windows`) — afișa eticheta greșită pentru
+   valoarea selectată.
+
+**Nou**: `%USERPROFILE%\Desktop\cursorpro_debug.log` înregistrează acum
+activ pornirea aplicației, ecranele detectate, și fiecare
+activare/dezactivare de Spotlight (cu starea reală a tastei citite) —
+dacă problema persistă, acest fișier arată exact unde se oprește
+lanțul (tasta nu e detectată ținută / licența blochează / altceva).
+
 ## v1.3.1 (2026-09-04) — Fix: crash la deschiderea Preferințelor
 
 Prima deschidere a ferestrei de Preferințe (după instalarea v1.3.0)
