@@ -3,14 +3,14 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
-## v1.4.2 (2026-09-04) — Fix real: Spotlight/Zoom acum răspund constant
+## v1.4.2 (2026-09-04) — Încercare de fix: Halo/Spotlight/Zoom "prind viață" doar la clic
 
-Cauza reală, în sfârșit găsită: bucla internă care urmărește cursorul și
-tastele ținute era legată greșit de pasul de randare al interfeței (care
-rulează doar când ceva vizual se schimbă), nu de un ceas normal — de-aia
-Halo/Spotlight/Zoom păreau să "prindă viață" doar când dădeai
-clic din mouse. Corectat: bucla rulează acum constant, la ~60 cadre pe
-secundă, indiferent de altă activitate.
+Un candidat real de cauză a fost corectat (bucla internă era legată
+greșit de pasul de randare al interfeței, nu de un ceas normal), dar
+testarea ulterioară a arătat că problema persistă neschimbată — Halo,
+Spotlight și Zoom se actualizează în continuare doar în jurul unui clic
+de mouse, nu constant. Cauza reală rămâne, deci, deschisă; nu s-a mai
+încercat un alt fix fără dovezi suplimentare de diagnostic.
 
 ## v1.4.1 (2026-09-04) — Fix: log de diagnostic negăsit
 

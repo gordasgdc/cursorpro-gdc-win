@@ -367,3 +367,34 @@ să apară necondiționat — posibil o cauză separată, reală, de investigat
 dacă tot lipsește după acest fix). Verificat cu `dotnet build` — NU
 verificat prin rulare reală. Versiune 1.4.1 → 1.4.2 (PATCH — fix real,
 nicio funcționalitate nouă).
+
+**2026-09-04 — v1.4.2 NU a rezolvat problema — status DESCHIS, oprit
+deliberat aici.** Cristi, după instalare: „raspunde doar la click toate,
+e bine si asa de moment". Deci `DispatcherPriority.Normal` NU a fost
+cauza reală (sau nu singura) — simptomul persistă identic, acum inclusiv
+la Halo (care înainte "funcționa" fără nicio plângere legată de
+cadență). Trei încercări de fix bazate pe analiză statică de cod, fără
+acces la Windows pentru reproducere directă — nu mai ghicim un al
+patrulea fix fără dovezi. Cristi a acceptat starea curentă ca fiind
+suficientă pentru moment ("e bine și așa"), deci NU s-a mai publicat un
+alt release după acest punct.
+
+Ipoteze rămase, NEVERIFICATE, pentru o sesiune viitoare cu acces la
+Windows real (Task Manager, Process Explorer, sau pur și simplu
+observație directă la runtime):
+- Throttling de proces în fundal (Windows 10/11 "Efficiency Mode"/
+  Process Lifecycle Manager) — posibil, dat fiind că toate ferestrele
+  aplicației sunt `WS_EX_NOACTIVATE`/`WS_EX_TOOLWINDOW` (nu au fereastră
+  activă niciodată, nu apar în Alt+Tab) — un tipar care pe alte aplicații
+  Windows a dus la throttling agresiv de timere pentru procese
+  considerate "de fundal".
+- `DispatcherTimer` însuși, indiferent de prioritate, ar putea fi
+  afectat de un mecanism WPF de "quiescing" a thread-ului de compoziție
+  când nu există randare cerută activ de vreo fereastră — neconfirmat,
+  dar `DispatcherPriority.Normal` nu a schimbat simptomul observat.
+- De verificat DIRECT (cel mai simplu test posibil, sesiunea următoare):
+  adaugă un `DebugLog.Log` în interiorul `_timer.Tick` (nu doar în
+  `InputMonitor.Tick()`) și verifică dacă liniile apar constant în
+  `cursorpro_debug.log` chiar și FĂRĂ niciun clic — asta ar separa
+  definitiv "timer-ul nu se declanșează deloc" de "timer-ul se
+  declanșează, dar randarea vizuală nu se actualizează pe ecran".
