@@ -94,6 +94,35 @@
                 <TextBlock Text="Ține apăsată tasta aleasă ca să activezi Spotlight." Foreground="Gray" Margin="0,8,0,0" TextWrapping="Wrap"/>
             </StackPanel>
         </TabItem>
+        <TabItem x:Name="ZoomTab" Header="Zoom">
+            <StackPanel Margin="16" TextElement.FontSize="13">
+                <TextBlock Text="Lupă (Zoom)" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="110"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Nivel mărire" VerticalAlignment="Center"/>
+                    <Slider x:Name="ZoomFactorSlider" Grid.Row="0" Grid.Column="1" Margin="0,0,0,8" Minimum="1.1" Maximum="12" ValueChanged="HaloControl_Changed"/>
+
+                    <!-- Ordinea TREBUIE să fie identică cu enum ModifierKey — vezi nota
+                         din tab-ul Halo & Spotlight de mai sus. -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Tastă activare" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="ZoomKeyCombo" Grid.Row="1" Grid.Column="1" SelectionChanged="HaloControl_Changed">
+                        <ComboBoxItem Content="Alt"/>
+                        <ComboBoxItem Content="Ctrl"/>
+                        <ComboBoxItem Content="Shift"/>
+                        <ComboBoxItem Content="Windows"/>
+                    </ComboBox>
+                </Grid>
+                <TextBlock Text="Ține apăsată tasta aleasă ca lupa să urmărească cursorul. Nivelul de mărire NU se ajustează încă live cu scroll (ca pe Mac) — necesită un hook de tastatură/mouse real, care va veni odată cu Desenul și Afișarea Tastelor Rapide." Foreground="Gray" Margin="0,8,0,0" TextWrapping="Wrap"/>
+            </StackPanel>
+        </TabItem>
         <TabItem x:Name="LicenseTab" Header="Licență">
             <StackPanel Margin="16" TextElement.FontSize="13">
                 <TextBlock x:Name="StatusText" FontWeight="SemiBold" Margin="0,0,0,12"/>

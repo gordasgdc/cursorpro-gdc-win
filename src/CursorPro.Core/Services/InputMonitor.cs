@@ -77,5 +77,13 @@ public static class InputMonitor
         {
             DebugLog.Log($"Spotlight {(state.IsSpotlightActive ? "ACTIVAT" : "dezactivat")} — tastă={state.SpotlightKey}, ținută={keyHeld}, deblocat={unlocked}");
         }
+
+        var zoomWasActive = state.IsZoomActive;
+        var zoomKeyHeld = IsHeld(state.ZoomKey);
+        state.IsZoomActive = unlocked && zoomKeyHeld;
+        if (state.IsZoomActive != zoomWasActive)
+        {
+            DebugLog.Log($"Zoom {(state.IsZoomActive ? "ACTIVAT" : "dezactivat")} — tastă={state.ZoomKey}, ținută={zoomKeyHeld}, deblocat={unlocked}");
+        }
     }
 }

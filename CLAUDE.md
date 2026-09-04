@@ -200,6 +200,24 @@ funcționalitatea viitoare care are nevoie de evenimente punctuale (apăsare
 de tastă, nu doar stare ținută) — vezi Desen (scurtături unealtă) și
 Afișare Taste Rapide mai jos.
 
+### Zoom/lupă — PORTAT, v1.4.0
+`ZoomController` (chemat din bucla existentă de 60fps a
+`OverlayManager`) creează o singură `ZoomWindow` (fereastră circulară,
+`SetWindowRgn` cu `CreateEllipticRgn`, NU `AllowsTransparency` WPF —
+limitare cunoscută: un `HwndHost` nu se compune corect într-o fereastră
+WPF layered), care găzduiește un `MagnifierHost : HwndHost` — fereastra
+nativă „Magnifier" a Windows Magnification API
+(`Magnification.dll`: `MagInitialize`/`MagSetWindowSource`/
+`MagSetWindowTransform`), NU `Graphics.CopyFromScreen` pe un timer
+(alternativa mai simplă din planul inițial) — aleasă pentru că oferă
+conținut LIVE, compus continuu de sistem, la fel ca ScreenCaptureKit pe
+Mac, spre deosebire de capturi statice succesive. `MagInitialize()`/
+`MagUninitialize()` se apelează o singură dată, la pornirea/oprirea
+`OverlayManager`. Reglaj nivel mărire + tastă activare: Preferințe →
+tab nou „Zoom". **NEPORTAT încă din Zoom** (are nevoie de un hook real
+de mouse/tastatură, vine cu Desenul): ajustare live cu scroll, bordură/
+reticulă, blocare poziție (`isMagnifierLocked`), citire culoare pixel.
+
 ### Arhitectura ÎNCĂ NEPORTATĂ (planul complet, pentru sesiunea următoare)
 Fiecare din următoarele necesită un mediu Windows real pentru
 testare/verificare, nu doar `dotnet build` de pe Mac (Regula 31,
@@ -207,13 +225,10 @@ excepția documentată mai sus):
 - **Desen** (freehand/săgeată/încercuire/cadru) — extinde `OverlaySurface`
   cu randarea traseelor (model de date deja proiectat pe Mac, de portat
   în `AppState`/un nou `DrawItem`), plus `WH_KEYBOARD_LL` real pentru
-  scurtăturile reconfigurabile de schimbare unealtă (`Alt+1..4` pe Mac).
-- **Zoom/lupă** — Windows Magnification API (`Magnification.dll`,
-  P/Invoke: `MagInitialize`, `MagSetWindowSource`, fereastră magnifier
-  child) în loc de ScreenCaptureKit (Mac). Alternativ (mai simplu, mai
-  puțin performant): `Graphics.CopyFromScreen` pe un timer, într-o
-  fereastră mică — de evaluat care se potrivește mai bine cerinței de
-  "CPU 0% la staționare".
+  scurtăturile reconfigurabile de schimbare unealtă (`Alt+1..4` pe Mac) —
+  ACELAȘI hook ar debloca și ajustarea live cu scroll a Zoom-ului
+  (`WH_MOUSE_LL` pentru rotița de scroll) și Afișarea Tastelor Rapide de
+  mai jos, deci merită implementat o singură dată, folosit de toate trei.
 - **Efecte de Clic / Afișare Taste / Preseturi Focus / Semnal
   multi-display** (v1.1.0 Mac) — Efectele de Clic + Semnalul multi-display
   se pot adăuga direct pe `InputMonitor.Tick()` existent (clic stânga/
@@ -288,3 +303,28 @@ funcționează, `cursorpro_debug.log` (Desktop) ar trebui să arate dacă
 tasta e detectată ca ținută sau nu, ceea ce restrânge mult următoarea
 ipoteză. Versiune 1.3.1 → 1.3.2 (PATCH — fix + diagnostic, nicio
 funcționalitate nouă).
+
+**2026-09-04 — Spotlight ÎNCĂ raportat nefuncțional după v1.3.2, cauză
+NECONFIRMATĂ.** Cristi: „Spotlight tot nu merge" — fixurile din v1.3.2
+(dimensiune corectă + ordine combo) nu au rezolvat. Log-ul de diagnostic
+(`cursorpro_debug.log`) adăugat în v1.3.2 nu a fost încă citit/trimis —
+PASUL URMĂTOR real e să citim acel fișier, nu să ghicim încă un fix
+fără dovadă. Ipoteză nouă, neconfirmată, de investigat dacă log-ul arată
+"ținută=false" constant: `GetAsyncKeyState` poate fi afectat de UIPI
+(User Interface Privilege Isolation) dacă fereastra din prim-plan
+aparține unui proces cu nivel de integritate mai mare (ex. o fereastră
+rulată ca Administrator) — un scenariu plauzibil pe un VM de test
+proaspăt. De testat: ținerea Ctrl cu o fereastră NEADMIN în prim-plan.
+
+**2026-09-04 — v1.4.0: Zoom (lupă) portat.** Cerut de Cristi ("zoom nu
+se poate integra?"). Vezi secțiunea de arhitectură „Zoom/lupă — PORTAT"
+de mai sus pentru detalii tehnice. Adăugat: `Core/Services/
+MagnificationInterop.cs` (P/Invoke Magnification API), `Client/
+MagnifierHost.cs` (`HwndHost`), `Client/ZoomWindow.xaml(.cs)`, `Client/
+ZoomController.cs`, tab nou „Zoom" în Preferences, câmpuri Zoom noi în
+`AppState.cs`/`InputMonitor.cs`. Verificat cu `dotnet build` (0 erori/
+avertismente) pe Core și Client — NU verificat prin rulare reală (vezi
+excepția Regula 31); riscuri cunoscute, neverificate: comportamentul
+real al `SetWindowRgn` peste un `HwndHost`, acuratețea conversiei
+DIP↔pixeli pe un ecran cu altă scalare decât cea primară. Versiune
+1.3.2 → 1.4.0 (MINOR — funcționalitate nouă).
