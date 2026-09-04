@@ -3,6 +3,18 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.4.1 (2026-09-04) — Fix: log de diagnostic negăsit
+
+Fișierul `cursorpro_debug.log` (adăugat în v1.3.2) nu apărea deloc pe
+Desktop la testare reală — cauză probabilă: Desktop redirecționat (ex.
+OneDrive). Acum scrie în DOUĂ locații: `Desktop\cursorpro_debug.log` ȘI
+`%LocalAppData%\CursorPro\cursorpro_debug.log` — a doua e independentă
+de orice redirecționare de Desktop.
+
+**Spotlight rămâne raportat nefuncțional** — fără logul de diagnostic
+încă nu am o cauză confirmată. Dacă tot nu se activează, verifică acum
+și `%LocalAppData%\CursorPro\cursorpro_debug.log`.
+
 ## v1.4.0 (2026-09-04) — Zoom (lupă)
 
 **Ce e nou**: o lupă circulară care urmărește cursorul, cu conținut LIVE

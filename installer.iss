@@ -11,7 +11,7 @@
 ;   4. Rezultatul apare in Output\CursorProGDCSetup.exe
 
 #define MyAppName "CursorPro GDC"
-#define MyAppVersion "1.4.0"
+#define MyAppVersion "1.4.1"
 #define MyAppPublisher "Cristi Gordas"
 #define MyAppExeName "CursorPro.exe"
 #define MyAppURL "https://gordas.dev/cursorpro-gdc"

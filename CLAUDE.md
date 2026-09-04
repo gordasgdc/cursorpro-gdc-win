@@ -328,3 +328,19 @@ excepția Regula 31); riscuri cunoscute, neverificate: comportamentul
 real al `SetWindowRgn` peste un `HwndHost`, acuratețea conversiei
 DIP↔pixeli pe un ecran cu altă scalare decât cea primară. Versiune
 1.3.2 → 1.4.0 (MINOR — funcționalitate nouă).
+
+**2026-09-04 — v1.4.1: fix log de diagnostic (Desktop nu producea
+fișierul).** Cristi a confirmat că `cursorpro_debug.log` nu exista deloc
+pe Desktop — chiar linia necondiționată de pornire a aplicației lipsea,
+ceea ce indică o problemă de scriere, nu de logică (Spotlight/Zoom
+nefuncționale ar fi explicat lipsa liniilor LOR, nu a liniei de
+pornire). Cauză neconfirmată (Desktop redirecționat prin OneDrive e
+cea mai probabilă, pe baza cunoștințelor generale despre Windows — NU
+verificată direct pe sistemul lui). Fix defensiv: `DebugLog.Log` scrie
+acum în DOUĂ locații independente (`Desktop` + `%LocalAppData%\
+CursorPro\`, acesta din urmă folosind exact același folder ca
+`LicenseManager` pentru `trial-start.txt`/`license.txt` — deja
+confirmat scriptibil, deoarece proba/licența funcționează). Diagnoza
+reală a Spotlight rămâne DESCHISĂ — depinde de conținutul logului din
+ORICARE dintre cele două locații, la următorul test. Versiune 1.4.0 →
+1.4.1 (PATCH — fix diagnostic, nicio funcționalitate nouă).
