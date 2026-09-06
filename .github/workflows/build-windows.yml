@@ -13,6 +13,12 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
+    env:
+      # Secret comun GDC (identic in toate repo-urile Windows din
+      # ecosistem) - vezi codesigning/README-windows.md + CLAUDE.md
+      # Regula 34. "secrets" nu e permis direct in "if:" de pas, doar
+      # prin acest "env:" de job.
+      HAS_WIN_SELFSIGN: ${{ secrets.WIN_SELFSIGN_PFX_BASE64 != '' }}
     steps:
       - name: Descarca codul din repo
         uses: actions/checkout@v4
@@ -31,9 +37,25 @@ jobs:
       - name: Publica exe-ul (self-contained, win-x64)
         run: dotnet publish src/CursorPro.Client/CursorPro.Client.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o publish
 
+      - name: Semneaza CursorPro.exe (Self-Signed, test intern)
+        if: env.HAS_WIN_SELFSIGN == 'true'
+        shell: pwsh
+        run: .\codesigning\sign-windows.ps1 -TargetPath "publish\CursorPro.exe"
+        env:
+          WIN_SELFSIGN_PFX_BASE64: ${{ secrets.WIN_SELFSIGN_PFX_BASE64 }}
+          WIN_SELFSIGN_PFX_PASSWORD: ${{ secrets.WIN_SELFSIGN_PFX_PASSWORD }}
+
       - name: Compileaza instalatorul (Inno Setup - preinstalat pe runner-ul windows-latest)
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
+
+      - name: Semneaza CursorProGDCSetup.exe (Self-Signed, test intern)
+        if: env.HAS_WIN_SELFSIGN == 'true'
+        shell: pwsh
+        run: .\codesigning\sign-windows.ps1 -TargetPath "Output\CursorProGDCSetup.exe"
+        env:
+          WIN_SELFSIGN_PFX_BASE64: ${{ secrets.WIN_SELFSIGN_PFX_BASE64 }}
+          WIN_SELFSIGN_PFX_PASSWORD: ${{ secrets.WIN_SELFSIGN_PFX_PASSWORD }}
 
       - name: Incarca instalatorul ca artefact descarcabil
         uses: actions/upload-artifact@v4
