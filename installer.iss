@@ -11,7 +11,7 @@
 ;   4. Rezultatul apare in Output\CursorProGDCSetup.exe
 
 #define MyAppName "CursorPro GDC"
-#define MyAppVersion "1.4.2"
+#define MyAppVersion "1.4.3"
 #define MyAppPublisher "Cristi Gordas"
 #define MyAppExeName "CursorPro.exe"
 #define MyAppURL "https://gordas.dev/cursorpro-gdc"
@@ -48,6 +48,9 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; [2026-09-06] Ghidul PDF, bundle-uit langa exe ca sa fie accesibil din
+; meniul contextual al iconitei din tray (App.xaml.cs, OpenHelpGuide).
+Source: "installer\Instructiuni-CursorProGDC.pdf"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

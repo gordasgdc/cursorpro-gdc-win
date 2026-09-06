@@ -3,6 +3,14 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.4.3 (2026-09-06) — Ghid de utilizare (PDF) nou, în meniul tray-ului
+
+Meniul din bara de sistem avea doar Preferințe/Licență/Închide — fără
+niciun acces la un ghid de utilizare. Adăugat un PDF nou (RO/EN/ES),
+specific versiunii Windows (documentează exact Halo & Spotlight, Zoom și
+Licența — funcțiile disponibile azi, nu setul complet de pe Mac), plus
+un item nou „Ghid de utilizare (PDF)” în meniul contextual al iconiței.
+
 ## v1.4.2 (2026-09-04) — Încercare de fix: Halo/Spotlight/Zoom "prind viață" doar la clic
 
 Un candidat real de cauză a fost corectat (bucla internă era legată

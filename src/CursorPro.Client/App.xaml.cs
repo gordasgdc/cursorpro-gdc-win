@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using CursorPro.Core.Services;
@@ -84,10 +86,21 @@ public partial class App : Application
         menu.Items.Add(new ToolStripSeparator());
 
         menu.Items.Add(new ToolStripMenuItem("Preferințe…", null, (_, _) => OpenPreferences(PreferencesTab.General)));
+        menu.Items.Add(new ToolStripMenuItem("Ghid de utilizare (PDF)", null, (_, _) => OpenHelpGuide()));
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add(new ToolStripMenuItem("Închide CursorPro GDC", null, (_, _) => Shutdown()));
 
         _trayIcon.ContextMenuStrip = menu;
+    }
+
+    /// [2026-09-06] Deschide ghidul PDF bundle-uit langa exe (installer.iss
+    /// copiaza "installer/Instructiuni-CursorProGDC.pdf" in {app}) — pana
+    /// acum meniul tray-ului nu avea NICIUN acces la ghid.
+    private static void OpenHelpGuide()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "Instructiuni-CursorProGDC.pdf");
+        if (!File.Exists(path)) return;
+        Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
     }
 
     private static string AppVersion =>
