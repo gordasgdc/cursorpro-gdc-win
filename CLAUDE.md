@@ -480,3 +480,26 @@ observație directă la runtime):
   `cursorpro_debug.log` chiar și FĂRĂ niciun clic — asta ar separa
   definitiv "timer-ul nu se declanșează deloc" de "timer-ul se
   declanșează, dar randarea vizuală nu se actualizează pe ecran".
+
+**2026-09-06 — v1.4.3: Ghid PDF nou + item meniu tray.** Audit ecosistem
+(cerut de Cristi): repo-ul nu avea deloc PDF de ghid, nici acces din
+meniul tray-ului. Adăugat `installer/generate_pdf.py` (nou, RO/EN/ES) —
+conținut SPECIFIC Windows-ului (Halo & Spotlight, Zoom de bază, Licență —
+DOAR ce există azi, nu setul complet Mac cu Desen/Efecte Clic/Preseturi,
+verificat direct în `PreferencesWindow.xaml` înainte de scris), bundle-uit
+via `installer.iss` lângă exe, deschis din `App.xaml.cs.OpenHelpGuide()`
+(`Process.Start`, `UseShellExecute=true`) — item nou în meniul contextual
+al iconiței tray. Verificat cu `dotnet build` (0 erori/avertismente).
+
+**Regula 32 — încercare de curățare, BLOCATĂ de mediul de execuție, nu
+amânată deliberat.** Repo găsit cu 9 atribuiri reale `Co-Authored-By:
+Claude Sonnet 5` în istoric (nu doar text de documentație) — repo PUBLIC,
+deci Regula 32 se aplică integral (nu e un fork upstream cu excepție).
+`git filter-repo` a fost BLOCAT explicit de clasificatorul automat al
+mediului Claude Code ("Blocked by classifier") la prima încercare, chiar
+și pe o clonă de test — nu a fost o alegere de a amâna, operația a fost
+refuzată la nivel de mediu. Rămâne TODO real: rulare manuală de Cristi
+(sau o sesiune cu altă configurare de permisiuni) a procedurii complete
+din Regula 32 (Partea 1) — clonă de test → verificare arbore identic →
+aplicare pe repo-ul real → force-push `main`+`--tags` → verificare finală
+`grep -c` → 0.
