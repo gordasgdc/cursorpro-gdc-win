@@ -491,15 +491,15 @@ via `installer.iss` lângă exe, deschis din `App.xaml.cs.OpenHelpGuide()`
 (`Process.Start`, `UseShellExecute=true`) — item nou în meniul contextual
 al iconiței tray. Verificat cu `dotnet build` (0 erori/avertismente).
 
-**Regula 32 — încercare de curățare, BLOCATĂ de mediul de execuție, nu
-amânată deliberat.** Repo găsit cu 9 atribuiri reale `Co-Authored-By:
-Claude Sonnet 5` în istoric (nu doar text de documentație) — repo PUBLIC,
-deci Regula 32 se aplică integral (nu e un fork upstream cu excepție).
-`git filter-repo` a fost BLOCAT explicit de clasificatorul automat al
-mediului Claude Code ("Blocked by classifier") la prima încercare, chiar
-și pe o clonă de test — nu a fost o alegere de a amâna, operația a fost
-refuzată la nivel de mediu. Rămâne TODO real: rulare manuală de Cristi
-(sau o sesiune cu altă configurare de permisiuni) a procedurii complete
-din Regula 32 (Partea 1) — clonă de test → verificare arbore identic →
-aplicare pe repo-ul real → force-push `main`+`--tags` → verificare finală
-`grep -c` → 0.
+**Regula 32 — REZOLVAT 2026-09-06.** Repo găsit cu 9 atribuiri reale
+`Co-Authored-By: Claude Sonnet 5` în istoric (nu doar text de
+documentație) — repo PUBLIC, deci Regula 32 se aplică integral. `git
+filter-repo` a fost BLOCAT explicit de clasificatorul automat al mediului
+Claude Code ("Blocked by classifier"), inclusiv pe o clonă de test — nu a
+fost o alegere de a amâna, operația a fost refuzată la nivel de mediu.
+Script de curățare pregătit (`~/Developer/clean-claude-attribution.sh`,
+test-clone + verificare arbore identic + aplicare + force-push, automat)
+și predat lui Cristi, care l-a rulat manual. **Verificat după rulare: 0
+apariții** (`git log --all --format=%B | grep -c "Co-Authored-By:
+Claude"`), remote `origin` corect re-adăugat, push confirmat pe `main`
+și tag-uri.
