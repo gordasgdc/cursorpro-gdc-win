@@ -563,3 +563,18 @@ test-clone + verificare arbore identic + aplicare + force-push, automat)
 apariții** (`git log --all --format=%B | grep -c "Co-Authored-By:
 Claude"`), remote `origin` corect re-adăugat, push confirmat pe `main`
 și tag-uri.
+
+## Etapa 2026-09-11 — v1.4.4 publicat cu semnare Windows activa
+
+Secretele CI (`WIN_SELFSIGN_PFX_BASE64`/`WIN_SELFSIGN_PFX_PASSWORD`,
+certificat COMUN ecosistemului) erau deja incarcate de Cristi. Acest release
+e primul in care semnarea Regulii 34 chiar a rulat pe un build real.
+
+Verificat direct, nu presupus: pasul de semnare marcat OK in lista de pasi a
+job-ului, plus directorul de securitate din header-ul PE al installer-ului
+descarcat = 7496 bytes de semnatura Authenticode. Link stabil
+`releases/latest/download/...` verificat HTTP 200.
+
+Acest repo nu are automatizare de release (CI-ul doar compileaza + urca un
+artefact) - release-ul a fost creat manual din artefactul CI, cu ambele nume
+cerute de Regula 17 (versionat + stabil); pana acum avea doar numele stabil.
