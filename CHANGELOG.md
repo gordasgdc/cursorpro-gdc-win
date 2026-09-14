@@ -3,6 +3,16 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v1.4.5 (2026-09-14) — Tema Dark/Light
+
+### Added
+- Aplicatia urmeaza acum tema Windows. Fereastra de Preferinte aparea alba cu
+  text negru chiar si cand tot sistemul era pe tema inchisa.
+- Schimbarea temei din Windows se aplica pe loc, fara repornirea aplicatiei.
+
+### Fixed
+- Textele secundare si mesajele de eroare sunt lizibile in ambele teme.
+
 ## v1.4.3 (2026-09-06) — Ghid de utilizare (PDF) nou, în meniul tray-ului
 
 Meniul din bara de sistem avea doar Preferințe/Licență/Închide — fără
