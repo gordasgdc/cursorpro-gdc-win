@@ -1,0 +1,58 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Regula 37 pentru o aplicație WPF FĂRĂ WPF-UI.
+        CursorPro nu folosește WPF-UI, deci nu există nicio temă de sistem la
+        care să ne legăm: WPF clasic desenează ferestrele albe și textul negru,
+        indiferent de Dark Mode-ul din Windows. De aceea paleta e a noastră,
+        în două dicționare (Theme.Dark/Theme.Light), iar aici stau pensulele
+        care o citesc.
+
+        `DynamicResource`, nu `StaticResource`: al doilea se rezolvă o singură
+        dată, la încărcare, deci comutarea temei n-ar schimba nimic pe ecran.
+    -->
+
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{DynamicResource WindowBackgroundColor}" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{DynamicResource CardBackgroundColor}" />
+    <SolidColorBrush x:Key="CardStrokeBrush" Color="{DynamicResource CardStrokeColor}" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{DynamicResource TextPrimaryColor}" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{DynamicResource TextSecondaryColor}" />
+
+    <!-- Gri de stare dezactivată, identic în ambele teme (vezi Regula 37). -->
+    <SolidColorBrush x:Key="TextDisabledBrush" Color="#8E8E93" />
+    <SolidColorBrush x:Key="StatusErrorBrush" Color="#E0605E" />
+
+    <!-- Suprafețe care NU urmează tema, documentate: lupa desenează pixelii
+         ecranului, iar rama neagră e referința neutră pentru ei. -->
+    <SolidColorBrush x:Key="MagnifierSurfaceBrush" Color="#FF000000" />
+
+    <Style TargetType="Window">
+        <Setter Property="Background" Value="{DynamicResource WindowBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="TextBox">
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
+                <Setter Property="Opacity" Value="1" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

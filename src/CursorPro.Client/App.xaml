@@ -2,6 +2,17 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- ORDINEA E FIXATA: 0 = paleta de culori (inlocuita la
+                     runtime de WindowsThemeManager), 1 = stilurile care o
+                     citesc prin DynamicResource. Vezi WindowsThemeManager. -->
+                <ResourceDictionary Source="Styles/Theme.Dark.xaml" />
+                <ResourceDictionary Source="Styles/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
     <!--
         ShutdownMode="OnExplicitShutdown" — echivalentul Windows al
         LSUIElement (Mac): fără StartupUri (nicio fereastră principală

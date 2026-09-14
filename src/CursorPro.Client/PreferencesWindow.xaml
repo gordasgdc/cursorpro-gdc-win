@@ -9,7 +9,7 @@
         <TabItem x:Name="GeneralTab" Header="General">
             <StackPanel Margin="16" TextElement.FontSize="13">
                 <TextBlock Text="CursorPro GDC" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <TextBlock x:Name="VersionText" Foreground="Gray" Margin="0,0,0,16"/>
+                <TextBlock x:Name="VersionText" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,16"/>
                 <TextBlock TextWrapping="Wrap" Foreground="DarkOrange">
                     Halo cursor și Spotlight funcționează (vezi tab-ul dedicat).
                     Desen, Zoom (lupă) și Afișare taste rapide urmează, portate
@@ -91,7 +91,7 @@
                         <ComboBoxItem Content="Windows"/>
                     </ComboBox>
                 </Grid>
-                <TextBlock Text="Ține apăsată tasta aleasă ca să activezi Spotlight." Foreground="Gray" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                <TextBlock Text="Ține apăsată tasta aleasă ca să activezi Spotlight." Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,8,0,0" TextWrapping="Wrap"/>
             </StackPanel>
         </TabItem>
         <TabItem x:Name="ZoomTab" Header="Zoom">
@@ -120,7 +120,7 @@
                         <ComboBoxItem Content="Windows"/>
                     </ComboBox>
                 </Grid>
-                <TextBlock Text="Ține apăsată tasta aleasă ca lupa să urmărească cursorul. Nivelul de mărire NU se ajustează încă live cu scroll (ca pe Mac) — necesită un hook de tastatură/mouse real, care va veni odată cu Desenul și Afișarea Tastelor Rapide." Foreground="Gray" Margin="0,8,0,0" TextWrapping="Wrap"/>
+                <TextBlock Text="Ține apăsată tasta aleasă ca lupa să urmărească cursorul. Nivelul de mărire NU se ajustează încă live cu scroll (ca pe Mac) — necesită un hook de tastatură/mouse real, care va veni odată cu Desenul și Afișarea Tastelor Rapide." Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,8,0,0" TextWrapping="Wrap"/>
             </StackPanel>
         </TabItem>
         <TabItem x:Name="LicenseTab" Header="Licență">
@@ -141,7 +141,7 @@
                     <TextBox x:Name="ActivationCodeText" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
                 </DockPanel>
 
-                <TextBlock x:Name="ErrorText" Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                <TextBlock x:Name="ErrorText" Foreground="{DynamicResource StatusErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,12"/>
 
                 <Button x:Name="DeactivateButton" Content="Dezactivează licența" HorizontalAlignment="Left" Padding="8,4" Click="DeactivateButton_Click"/>
             </StackPanel>

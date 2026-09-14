@@ -34,6 +34,11 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // Tema, inainte de deschiderea oricarei ferestre: altfel Preferintele
+        // apar o clipa pe paleta implicita si abia apoi se corecteaza.
+        Services.WindowsThemeManager.ApplyNow();
+        Services.WindowsThemeManager.StartFollowingSystem();
+
         DebugLog.Log($"CursorPro GDC {AppVersion} pornit — vezi %USERPROFILE%\\Desktop\\cursorpro_debug.log pentru diagnostic.");
 
         // Pornește proba/încarcă licența salvată o singură dată, la

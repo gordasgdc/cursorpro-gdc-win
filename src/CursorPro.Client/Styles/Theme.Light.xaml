@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Paleta pentru tema deschisă. Aceleași chei ca în Theme.Dark.xaml. -->
+    <Color x:Key="WindowBackgroundColor">#F5F6F8</Color>
+    <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="CardStrokeColor">#D8DBE0</Color>
+    <Color x:Key="TextPrimaryColor">#1B1D21</Color>
+    <Color x:Key="TextSecondaryColor">#5C626B</Color>
+</ResourceDictionary>
