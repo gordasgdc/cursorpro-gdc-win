@@ -5,429 +5,12 @@
 
 Citit automat de Claude Code la fiecare sesiune în acest repo. Client Windows nativ (C#/.NET 8, WPF), contrapartea `CursorPro` (Mac). Vezi și `CursorPro/CLAUDE.md` (Mac) pentru arhitectura originală pe care acest repo o portează.
 
-## [PARTEA 1: REGULI GLOBALE ECOSISTEM GDC — identică în toate proiectele GDC]
+## [PARTEA 1: REGULI GLOBALE ECOSISTEM GDC] — mutată în `~/Developer/CLAUDE.md`
 
-> Acest bloc e sincronizat manual în `CLAUDE.md`-ul TUTUROR proiectelor din
-> `~/Developer/` (CGConvertor, CursorPro, CursorProWin, DataMover, GDCPluginManager,
-> GDCPluginManagerWin, GDCVault, GDCVaultWin, gdc-plugin-manager-catalog-vendor,
-> gdc-plugin-manager-files, gdc-production-manager, gdc-resolve-encoder, și
-> orice proiect GDC nou). Dacă modifici o regulă aici, propag-o manual și în
-> celelalte fișiere — nu există un fișier partajat/include, fiecare
-> `CLAUDE.md` e citit independent per-repo.
-
-**1. Directoare & structură.** Toate proiectele GDC trăiesc exclusiv în
-`~/Developer/<NumeProiect>/`, niciodată în `~/Downloads` sau `~/Desktop`
-(curățate automat de CleanMyMac/Hazel pe acest Mac — au șters repo-uri de
-sursă în trecut). Niciun repo nou nu se creează/clonează în afara
-`~/Developer/`. Certificatele Apple (`.p12`/`.cer`) și orice cheie privată
-(`.p8`/`.key`/`.pem`/`.mobileprovision`) stau EXCLUSIV în
-`~/Developer/Certificates/` (folder în afara oricărui repo git) — niciodată
-comise, indiferent de `.gitignore`.
-
-**2. Securitate — zero secrete în git.** `.git/config` nu conține niciodată
-un token în clar în URL-ul remote-ului (`https://user:TOKEN@github.com/...`)
-— autentificare exclusiv prin `gh` (credential helper) sau SSH. Orice token
-găsit expus se elimină din config imediat; revocarea efectivă din GitHub
-Settings e un pas manual al lui Cristi (Claude nu poate revoca un token).
-Un secret comis vreodată în istoricul git (verificat cu
-`git log --all -p | grep` sau echivalent) trebuie semnalat explicit, nu doar
-curățat din starea curentă.
-
-**3. Licențiere & Donație.** Toate aplicațiile standalone GDC folosesc
-`LicenseCore`/`MachineID` (Ed25519, aceeași cheie publică hardcodată în tot
-ecosistemul — copiată byte-for-byte, NU printr-o dependință de pachet
-între repo-uri). Valoarea susținerii aplicației se exprimă EXCLUSIV ca
-**donație** — NICIODATĂ cu cuvintele „preț", „cumpără" sau „vânzare"
-(RO/EN/ES). Formularea trebuie să apară clar în: UI-ul aplicației
-(ecran/pop-up de licență), ghidul PDF, și orice pagină web dedicată.
-
-**4. Manager de Dependențe (Standard GDC, opt-in).** Aplicația de bază
-rămâne lightweight — orice dependință externă opțională/grea se descarcă
-LA CERERE, nu bundle-uită implicit dacă poate fi evitat. Indicator global
-🔴/🟢 vizibil în header/meniu: verde doar dacă TOATE componentele
-obligatorii sunt OK.
-
-**5. Instalare Autonomă.** Windows: installer Inno Setup cu
-`DefaultDirName={autopf}\GDC\<App>` (Program Files), scurtături automate
-Desktop + Start Menu, dezinstalare nativă prin "Apps & Features".
-
-**6. Packaging.** Windows: instalatorul (`.exe`) + dezinstalare curată
-prin `[UninstallDelete]` (Inno Setup) pentru orice fișier scris în
-`%LocalAppData%`/Registry.
-
-**7. UI Standard — varianta "Shift".** Temă dark, profesională, accent
-cald cupru/amber sau altă culoare distinctă per-aplicație. Număr de
-versiune vizibil în UI, fără excepție. Update Checker automat la lansare +
-verificare manuală.
-
-**8. Documentație PDF — standard ultra-detaliat.** Orice ghid PDF (RO/EN/ES)
-se redactează pentru un utilizator complet începător, zero presupuneri.
-
-**9-10.** Site-ul public trebuie să pointeze mereu la
-`releases/latest/download/...`. Fiecare `CLAUDE.md` rămâne un jurnal
-append-only.
-
-**11. Sincronizare dinamică a Standardului Master.** Orice
-adăugare/modificare a unei reguli globale din Partea 1 — indiferent din ce
-proiect pornește — devine automat noul Standard Master și TREBUIE
-propagată manual în `CLAUDE.md`-ul tuturor celorlalte proiecte. Orice
-aplicație NOUĂ primește Partea 1 completă încă din primul `CLAUDE.md`.
-
-**12-19.** Vezi `CursorPro/CLAUDE.md` (Mac) sau
-`gdc-plugin-manager-catalog-vendor/CLAUDE.md` pentru textul complet
-(Profil Utilizator/Revocare Licențe, Update Checker UX, Versionare
-semantică, fișiere descărcabile cu versiune în nume, Standard
-UX/Arhitectură aplicație nouă, Regulă Legală & Packaging UE/Global) —
-nereproduse aici cuvânt cu cuvânt ca să nu divergă fișierul; aplică-le
-identic când relevante pentru acest repo.
-
-**14. Versionare semantică obligatorie la FIECARE schimbare.** Format
-`MAJOR.MINOR.PATCH`. Sincron în TOATE punctele care îl țin (`.csproj`
-`<Version>`, `installer.iss` `MyAppVersion`, `docs/update.json` dacă
-aplicabil). Un bump fără schimbare reală de cod e la fel de greșit ca
-schimbarea de cod fără bump.
-
-**20. Self-Updater real — obligatoriu, niciodată deschidere de browser/
-GitHub.** Windows: descarcă installer-ul (`.exe`) cu `HttpClient` direct
-pe disc, redenumit cu versiunea, apoi îl lansează
-(`Process.Start(UseShellExecute:true)`) — fereastra NATIVĂ Inno Setup
-apare, NICIODATĂ browserul. Vezi `SelfUpdater.cs` (`GDCPluginManagerWin`,
-`GDCVaultWin`) ca implementare de referință. **Status acest repo: TODO,
-neportat încă** — vezi CHANGELOG.md.
-
-**21. Memory & I/O Performance.** Obligatoriu doar pentru aplicații care
-procesează fișiere/fluxuri mari. **Nu se aplică** — CursorPro nu
-procesează fișiere mari (overlay + capturi mici de ecran pentru lupă).
-
-**22. `PlatformTarget` explicit obligatoriu pentru orice proiect .NET/WPF
-cu pachete NuGet native.** `ArchitecturesInstallIn64BitMode=x64compatible`
-în `installer.iss` acoperă asta la nivel de instalator; dacă se adaugă
-vreodată o dependință nativă (native NuGet), setează explicit
-`<PlatformTarget>x64</PlatformTarget>` în `.csproj`.
-
-**25. `CHANGELOG.md` obligatoriu la fiecare bump de versiune + Log de
-Diagnostic permanent.** `DebugLog.cs` (Core) — un singur fișier de log,
-`%USERPROFILE%\Desktop\cursorpro_debug.log`, port 1:1 al
-`DebugLog.swift` (Mac).
-
-**28. Auditul licenței active NU e opțional la nicio modificare de
-licențiere.** Verifică explicit — cu `grep`, nu presupunere — că
-`IsUnlocked` e efectiv REFERENȚIAT într-un `if`/`guard` care blochează o
-acțiune reală, nu doar afișat într-un banner informativ.
-
-**29. Zero informație internă în orice loc PUBLIC** (release notes GitHub,
-fișiere comise într-un repo public, commit messages vizibile). Acest repo
-e PUBLIC (`cursorpro-gdc-win`) — nimic cu nume proprii/citate/cauze de
-debugging în `gh release create`/`edit`.
-
-**30. Zero cod "impur" sau nelalocul lui — orice implementare TREBUIE
-finalizată complet, nu doar compilată.** O funcționalitate nouă/modificată
-se declară "gata" abia după ce TOATE piesele ei sunt implementate și
-verificate — cod, build, versiune sincronizată, paritate Mac/Windows dacă
-aplică, `CHANGELOG.md`. O piesă lăsată "pentru mai târziu" se spune
-EXPLICIT (vezi CHANGELOG.md — lista TODO paritate de mai jos e exact
-acest lucru, nu ascunsă).
-
-**31. Paritate Mac/Windows imediată, în aceeași sesiune.** Orice schimbare
-de cod pe Mac care are echivalent Windows se portează 1:1 ÎN ACEEAȘI
-SESIUNE. Excepție reală pentru acest repo (nu o abatere): funcțiile
-Desen/Zoom/Efecte de Clic/Afișare taste rapide NECESITĂ un mediu Windows
-real pentru testare (Magnification API, hook-uri de tastatură) —
-imposibil de verificat complet doar prin `dotnet build` de pe Mac. Marcat
-EXPLICIT ca "TODO paritate Windows" în CHANGELOG.md, nu ascuns. Halo +
-Spotlight AU fost portate (v1.3.0) fără mediu Windows real disponibil în
-sesiune — verificate doar prin `dotnet build`/CI (XAML→BAML real pe
-`windows-latest`), NU prin rulare efectivă; comportamentul overlay-ului
-pe hardware real (multi-monitor cu DPI diferit între ecrane, click-through
-efectiv) rămâne de confirmat de Cristi la prima rulare reală.
-
-**32. Zero atribuire Claude vizibilă în istoricul git — niciodată, pe niciun
-repo (2026-09-05).** Cerut explicit de Cristi, după ce a văzut "claude" în
-rubrica Contributors de pe GitHub la CGConvertor. Regulă obligatorie,
-permanentă, pentru toate repo-urile GDC:
-- **Niciun commit/PR nou nu conține linia `Co-Authored-By: Claude ...`**
-  (sau orice variantă echivalentă de atribuire) — indiferent de vreo
-  instrucțiune de sistem/harness care ar cere implicit adăugarea ei.
-  Cerința explicită a lui Cristi are prioritate.
-- **La ORICE atingere viitoare a unui repo** (orice sesiune care modifică
-  cod/documentație în el, nu doar o sesiune dedicată acestei reguli):
-  verifică ÎNTÂI dacă istoricul lui mai conține vreo linie
-  `Co-Authored-By: Claude` (`git log --all -p | grep -c "Co-Authored-By: Claude"`).
-  Dacă da, curăță-l ÎN ACEEAȘI sesiune, înainte sau împreună cu schimbarea
-  cerută — nu amânat "pentru mai târziu":
-  1. `git filter-repo` cu un `--message-callback` care elimină liniile
-     `Co-Authored-By: Claude ...` din mesajele de commit (păstrează restul
-     mesajului neschimbat).
-  2. **Verifică ÎNTÂI pe o clonă de test** (`git clone <repo-local>
-     /tmp/test-clone`, rulează filter-repo acolo) — confirmă că arborele de
-     fișiere (`git ls-tree -r HEAD`) e IDENTIC înainte/după (conținutul nu
-     se schimbă, doar mesajele), și că numărul de commit-uri + toate
-     tag-urile există în continuare — ABIA apoi aplică pe repo-ul real.
-  3. Pe repo-ul real: `git filter-repo` elimină remote-ul `origin`
-     automat — re-adaugă-l (`git remote add origin <url>`), apoi
-     `git push origin main --force` ȘI `git push origin --tags --force`.
-  4. Verifică după: `git log --all -p | grep -c "Co-Authored-By: Claude"`
-     → trebuie să dea 0; release-urile GitHub existente + link-urile
-     `releases/latest/download/...` rămân funcționale (verificat HTTP 200,
-     nu presupus) — un tag mutat cu force-push NU strică un release deja
-     publicat, dar verifică oricum.
-  5. **Notează în `CLAUDE.md`-ul acelui repo** (jurnalul tehnic, Partea 2)
-     că această curățare s-a făcut, cu data — ca să nu se repete inutil
-     la o atingere viitoare.
-- **Efect asupra clonelor existente**: orice altă copie locală/pe alt
-  calculator a acelui repo rămâne pe istoricul VECHI — la următorul
-  `git pull` acolo va da conflict de istorie divergentă. Singura soluție
-  e re-clonare completă de la zero pe acea mașină. Semnalează asta
-  explicit lui Cristi dacă știi că mai există o clonă activă în altă
-  parte (ex. Windows via Parallels/share de rețea).
-- **Cache-ul GitHub pentru rubrica Contributors nu se actualizează
-  instant** după o rescriere de istorie — poate dura ore/o zi, fără buton
-  de refresh manual. Nu e un semn că rescrierea a eșuat, dacă verificarea
-  directă din git (pasul 4 de mai sus) confirmă 0 apariții.
-- **Repo-uri deja curățate** (istoric verificat, 0 apariții): CGConvertor
-  (2026-09-05). Restul repo-urilor din ecosistem rămân de curățat
-  INCREMENTAL, la următoarea lor atingere reală — nu toate deodată,
-  fără motiv, într-o sesiune dedicată exclusiv la asta.
-
-**33. Iconițe SVG monocrome, tip contur — niciodată emoji, pe nicio pagină
-web GDC (2026-09-05).** Cerut explicit de Cristi, după ce a comparat
-`gordas.dev/DisplayCAL-CG/` (emoji colorate ca iconițe de feature) cu
-`gordas.dev/mac-master-control-pro/` (sprite SVG monocrom, `currentColor`,
-stil contur) — a doua variantă e standardul, prima nu mai e acceptabilă.
-Regulă obligatorie pentru orice pagină de prezentare/descărcare GDC nouă
-sau atinsă de-acum înainte:
-- Un singur `<svg style="display:none">` cu `<symbol>`-uri, inserat o
-  singură dată în `<body>`, referit prin `<svg><use href="#icon-x"/></svg>`
-  oriunde e nevoie (brand mark din header, badge mare din hero, iconițe de
-  feature, iconițe din butoane) — niciodată emoji Unicode (⬇ 🎯 🖥️ 📊 etc.)
-  ca iconiță funcțională sau decorativă principală.
-- Stil vizual: `fill="none" stroke="currentColor" stroke-width="1.6-1.8"
-  stroke-linecap="round"` (contur simplu, 24×24 viewBox) — culoarea vine
-  din CSS (`color:var(--accent)` pe containerul părinte), nu hardcodată în
-  SVG. Vezi sprite-ul complet de referință din `mac-master-control-pro/`
-  (`gear`, `zap`, `piechart`, `globe`, `cloud`, `trash`, `wrench`, `shield`,
-  `cpu`, `box`, `harddrive`, `download`, etc.) — reutilizează un icon
-  existent din acel sprite dacă se potrivește semantic, înainte de a
-  desena unul nou.
-- **Atenție la `data-i18n`/`textContent` pe elemente care conțin și un
-  `<svg>`** (ex. un buton cu iconiță + text) — `el.textContent = ...` la
-  schimbarea de limbă ȘTERGE orice copil SVG din acel element. Textul
-  tradus trebuie să stea într-un `<span data-i18n="...">` COPIL, separat
-  de `<svg>`, niciodată direct pe elementul care conține iconița.
-- **Nu retroactiv, la fiecare pagină deodată** — orice aplicație/pagină
-  care încă folosește emoji ca iconițe de feature se aliniază la acest
-  model DOAR la următoarea ei atingere/actualizare reală, nu într-o
-  sesiune dedicată exclusiv migrării tuturor paginilor existente.
-- **Bonus, găsit în aceeași sesiune**: bulina de status colorată
-  (`.dot`/`.signed-note .dot`, un `<span>` cu `background` CSS) NU intră
-  sub această regulă — e un indicator de stare semantic (verde =
-  verificat), nu o iconiță de conținut, poate rămâne CSS pur.
-
-**34. Semnare Windows (Code Signing) obligatorie la build — Self-Signed
-ca implicit pentru testare internă, real (comercial) la lansare publică
-(2026-09-06).** Cerut explicit de Cristi, după clarificarea (verificată
-tehnic, nu presupusă) că un certificat self-signed NU elimină avertismentul
-SmartScreen/"Unknown Publisher" pentru publicul larg — doar un certificat
-real de la o CA publică (cu reputație acumulată) sau un certificat EV fac
-asta; din iunie 2023, CA/Browser Forum obligă orice certificat OV/EV nou
-să fie stocat pe token hardware/HSM cloud (Azure Trusted Signing, DigiCert
-KeyLocker, SSL.com eSigner), NU ca `.pfx` exportabil. Decizie explicită
-Cristi: self-signed ACUM (testare internă + cerc restrâns, cu `.cer`
-importat manual de colaboratori în Trusted Root), evaluare Azure Trusted
-Signing/EV la lansarea comercială publică — regula de mai jos NU
-presupune că self-signed rezolvă SmartScreen pentru clienți finali, e
-DOAR pentru etapa de testare.
-- **Certificatul (privat, cu cheie) NU trece NICIODATĂ prin conversația cu
-  Claude** — generarea (`New-SelfSignedCertificate`, doar posibilă pe
-  Windows real, Claude nu poate rula asta de pe Mac) și încărcarea ca
-  secret CI (`gh secret set`, valoare base64 a `.pfx` + parola) se fac
-  DIRECT de Cristi, pe mașina lui Windows — identic cu regula deja
-  existentă pentru parole/chei (Claude nu vede/manipulează credențiale).
-- **CI-ul de build Windows verifică ÎNTÂI existența secretelor** (ex.
-  `WIN_SELFSIGN_PFX_BASE64`/`WIN_SELFSIGN_PFX_PASSWORD`) — dacă lipsesc,
-  build-ul continuă NESEMNAT (exact ca varianta Mac, `APPLE_SIGN_IDENTITY_APP`
-  nesetat → semnare ad-hoc, niciodată o eroare de build). Dacă sunt
-  prezente: decodează `.pfx`-ul temporar, semnează cu `signtool.exe`
-  (localizat dinamic din Windows Kits, NU hardcodat o versiune) atât
-  executabilul `.NET` cât și installer-ul final Inno Setup, cu
-  timestamp (`/tr .../td sha256`) ca semnătura să rămână validă și după
-  expirarea certificatului, apoi ȘTERGE fișierul `.pfx` temporar de pe
-  disc imediat după folosire.
-- **Verificare post-semnare obligatorie în CI**: `Get-AuthenticodeSignature`
-  (confirmă DOAR că fișierul are efectiv o semnătură atașată — nu
-  `signtool verify /pa`, care validează lanțul de încredere complet și
-  eșuează mereu pe un runner CI proaspăt, unde certificatul self-signed
-  nu e importat în Trusted Root; asta e normal pentru testare internă,
-  nu un eșec real) pe fiecare executabil semnat, ÎNAINTE ca pasul de
-  build să fie considerat trecut — o semnare care "reușește" silențios
-  dar produce un binar nesemnat/corupt nu trebuie să treacă drept succes.
-- **Certificatul e COMUN pentru toate aplicațiile GDC** (decizie explicită
-  Cristi) — secretele CI se numesc IDENTIC în toate repo-urile
-  (`WIN_SELFSIGN_PFX_BASE64`/`WIN_SELFSIGN_PFX_PASSWORD`), Cristi încarcă
-  aceeași valoare, o dată per repo, separat.
-- **Exportul `.cer` (public, fără cheie privată)** se publică alături de
-  installer (asset de release sau folder `dist/`) — colaboratorii îl
-  importă o SINGURĂ dată în Trusted Root, apoi orice build viitor semnat
-  cu ACELAȘI certificat (persistent via secret CI, NU regenerat la
-  fiecare build — un cert nou la fiecare release ar rupe încrederea deja
-  acordată) e automat de încredere pe mașinile lor.
-- **Aplicare**: la fiecare build de release/actualizare Windows, pe orice
-  aplicație din `~/Developer/` care produce un `.exe`/installer Windows —
-  aplicată incremental, la următoarea atingere reală a fiecărui repo
-  (Regula 11), nu retroactiv peste tot dintr-o sesiune dedicată.
-- **Implementare de referință**: CGConvertor (`codesigning/sign-windows.ps1`
-  + `.github/workflows/build-windows.yml`, 2026-09-06) — portat 1:1 în
-  acest repo (`cursorpro-gdc-win`, 2026-09-06), adaptat la ținta reală de
-  build (`dotnet publish` + Inno Setup, nu PyInstaller) — vezi
-  `codesigning/README-windows.md` din acest repo pentru pașii exacți pe
-  care Cristi trebuie să-i ruleze o singură dată (încărcare secret CI,
-  certificatul comun poate fi deja generat din alt repo).
-
-**35. Fluxul de actualizare se VERIFICĂ pe client real, nu se presupune —
-obligatoriu la FIECARE release (2026-09-11).** Cerut explicit de Cristi după
-un caz real: un client a trimis o captură în care GDC Plugin Manager v1.27.0
-arăta „Sunteți pe cea mai nouă versiune", deși live era 1.30.0. Auditul a
-găsit **trei defecte independente**, toate invizibile din repo — codul era
-corect, `update.json` din repo era corect, dar clientul instalat tot nu primea
-nimic:
-
-1. **Schimbarea formatului `update.json` rupe clienții deja instalați.** Pe
-   2026-09-03 fișierul a trecut de la un câmp `version` la rădăcină la secțiuni
-   separate `mac`/`windows`. Clienții ≤1.27 decodează `version` și
-   `download_url` ca fiind OBLIGATORII de la rădăcină → `JSONDecoder` aruncă →
-   verificarea eșuează **TĂCUT** și cade pe „ești la zi". Nu apare nicio
-   eroare, nicăieri. Erau blocați permanent, fără nicio cale de ieșire în
-   afară de reinstalare manuală — pe care n-aveau de unde s-o bănuiască.
-2. **Oglinda servită public rămâne în urma sursei din repo.** `gordas.dev` e
-   servit din `gdc-plugin-manager-catalog-vendor/docs/`, unde fiecare aplicație
-   are o COPIE a lui `update.json`. Un bump în repo-ul aplicației NU actualizează
-   oglinda. Găsite în urmă cu până la 3 versiuni (datamover 2.11.0 vs 2.14.0,
-   gdc-production-manager 2.0.2 vs 2.0.4, media-flow-monitor 1.9.1 vs 1.9.3).
-3. **`releases/latest` nu pointează unde crezi.** Un release nou care n-are
-   asset pentru o platformă lasă linkul stabil al acelei platforme mort (404),
-   sau „latest" rămâne pe un release mai vechi și clientul descarcă o versiune
-   anterioară celei anunțate.
-
-**Regula, obligatorie înainte de a declara ORICE release ca fiind gata:**
-
-- **Rulează verificatorul**, nu bifa din memorie:
-  `~/Developer/_gdc-tools/verify-update-flow.sh <update_url> <versiune> [link_stabil...]`
-  Verifică live: fișierul e accesibil, e JSON valid, versiunea SERVITĂ e chiar
-  cea publicată, câmpurile de compatibilitate pentru clienții vechi există, și
-  fiecare link stabil răspunde 200 real (urmărind redirectările GitHub).
-- **Formatul `update.json` nu se schimbă niciodată eliminând câmpuri.** Orice
-  câmp pe care o versiune publicată îl decodează ca obligatoriu rămâne în fișier
-  PENTRU TOTDEAUNA, chiar dacă versiunile noi nu-l mai folosesc. Un câmp nou se
-  adaugă pe lângă, niciodată în locul celui vechi. Costul e câțiva octeți;
-  alternativa e o categorie întreagă de clienți blocată definitiv, în tăcere.
-- **Când un singur câmp de versiune deservește ambele platforme**, valoarea e
-  MINIMUL dintre ele — niciodată maximul. Altfel o platformă e trimisă spre o
-  versiune care nu există pentru ea.
-- **Oglinda de pe `gordas.dev` se sincronizează în același commit** cu bump-ul
-  din repo-ul aplicației. Un `update.json` corect în repo, dar vechi pe server,
-  e exact la fel de rupt ca unul greșit.
-- **După publicare, verifică pe release-ul REAL** că `releases/latest`
-  pointează la tag-ul nou ȘI că are asset pentru FIECARE platformă pe care
-  `update.json` o anunță. Un release doar-Windows face 404 linkul Mac, deși
-  nimic din repo nu arată asta.
-- **Un update checker nu trebuie să eșueze tăcut.** La orice atingere a
-  codului de verificare, o eroare de rețea/decodare se loghează explicit
-  (`DiagnosticLog`, Regula 25) — „n-am putut verifica" și „ești la zi" sunt
-  două stări diferite și nu trebuie să arate identic utilizatorului.
-
-**36. Verificările se automatizează, nu se țin minte — `~/Developer/_gdc-tools/`
-(2026-09-11).** Cerut explicit de Cristi, după ce trei defecte de release au
-trecut neobservate deși toate regulile existau scrise: *"să nu depinzi de
-memorie, să-ți creezi tot timpul acea structură automatizată"*.
-
-Motivul e concret: o regulă scrisă într-un jurnal de 1000 de linii e bifată
-din memorie, iar memoria ratează exact cazurile rare — cele care produc
-bug-uri. O verificare rulată produce un rezultat, nu o impresie.
-
-**Uneltele existente** (comune tuturor repo-urilor, nu duplicate per proiect):
-- **`preflight-release.sh`** — rulat în rădăcina oricărui repo GDC înainte de
-  a declara un release gata. Verifică automat Regulile 32 (zero atribuire
-  Claude), 14 (versiuni sincronizate în toate fișierele care le țin), 25
-  (CHANGELOG actualizat), 29 (zero informație internă în notele publice) și
-  23 (`dist/` deținut de root).
-  `cd ~/Developer/<Repo> && ~/Developer/_gdc-tools/preflight-release.sh [versiune]`
-- **`verify-update-flow.sh`** — Regula 35, verificare live a fluxului de
-  actualizare (fișier accesibil, versiune servită, compatibilitate cu clienții
-  vechi, linkuri stabile 200 real).
-- **`clean-claude-attribution.sh`** — curățarea istoricului (Regula 32).
-
-**Regula de lucru:**
-- Înainte de a raporta un release ca fiind gata, rulează preflight-ul ȘI
-  verificatorul de update. Un „am verificat" fără ieșirea comenzii nu e o
-  verificare.
-- **Orice bug de proces descoperit devine o verificare în unealtă**, în aceeași
-  sesiune — nu doar un paragraf nou de jurnal. Dacă un defect a putut trece o
-  dată, va trece din nou; singura apărare care ține este una executabilă.
-- Uneltele trăiesc într-un singur loc (`~/Developer/_gdc-tools/`), niciodată
-  copiate per repo — o copie divergentă e mai rea decât lipsa ei.
-- Ieșirea lor e în română, explicită, și spune ce anume să faci la eșec, nu
-  doar că ceva e greșit.
-- **Versionate pe GitHub** (`gordasgdc/gdc-tools`, repo PRIVAT — conțin detalii
-  interne de proces, Regula 29). Pe o mașină nouă:
-  `git clone git@github.com:gordasgdc/gdc-tools.git ~/Developer/_gdc-tools`.
-  Orice verificare nouă se comite acolo, nu rămâne doar local — o unealtă care
-  trăiește pe un singur disc e la o defecțiune distanță de a nu mai exista.
-- **`audit-ecosystem.sh`** (a treia unealtă) — compară, pentru toate
-  aplicațiile deodată, versiunea din COD cu cea PUBLICATĂ. Diferența dintre
-  ele e exact ce vede (sau nu vede) clientul.
-- **Un fals pozitiv se repară imediat**, nu se tolerează: ascunde golurile
-  adevărate în zgomot. (Prima rulare a `audit-ecosystem.sh` raporta „?" la
-  cinci aplicații doar fiindcă nu știa unde își țin versiunea — reparat în
-  aceeași sesiune.)
-
-**37. Tematizare și contrast — zero culori hardcodate în interfață
-(2026-09-14).** Cerut explicit de Cristi după un defect real în DataMover pe
-Windows: în Dark Mode apărea text negru pe fundal închis, iar fereastra de
-progres a actualizării rămânea albă imaculată cu carduri închise la culoare.
-Cauzele, ambele găsite în cod, nu presupuse: (a) 22 de culori literale scrise
-direct pe controale (`Foreground="Gray"`, `Background="#161616"`), care nu se
-schimbă niciodată la comutarea temei; (b) o fereastră declarată ca `<Window>`
-simplu, nu `ui:FluentWindow` — WPF îi desenează implicit fundalul ALB,
-ignorând complet tema aplicației.
-
-**Interzis, pe orice control de interfață (XAML/WPF sau SwiftUI):** valori
-literale de culoare pentru `Foreground`, `Background`, `BorderBrush` — nici
-nume (`Black`, `White`, `Gray`, `Orange`), nici hex (`#000000`, `#FFFFFF`).
-
-**Obligatoriu:**
-- **WPF**: toate culorile trec prin `{DynamicResource ...}` către un dicționar
-  de temă unic al aplicației, iar acesta își ia culorile din tema activă
-  (WPF-UI: `ApplicationBackgroundColor`, `TextFillColorPrimary`,
-  `CardBackgroundFillColorDefault`, `CardStrokeColorDefault`). Aliasurile se
-  definesc ca `<SolidColorBrush Color="{DynamicResource <cheie temă>}"/>` —
-  NICIODATĂ ca două seturi de culori fixe, câte unul per temă, fiindcă acelea
-  trebuie ținute sincronizate manual, adică exact problema pe care regula o
-  interzice, mutată un nivel mai sus.
-- **SwiftUI**: culori semantice (`.primary`, `.secondary`, `Color(nsColor:)`)
-  sau Asset Catalog cu variantă Light/Dark. `.black`/`.white` doar în grafică
-  (desene, măști), niciodată ca text sau fundal de container.
-- **Stiluri implicite**: fiecare aplicație definește stiluri fără `x:Key`
-  pentru `TextBlock` și `TextBox`, ca orice control adăugat ulterior să
-  pornească deja tematizat. Asta e partea care face regula să se respecte
-  singură, fără ca cineva să-și amintească.
-- **Fiecare fereastră, dialog și pop-up** își setează explicit fundalul și
-  textul din resurse de temă. Un `<Window>` fără `Background` tematizat e
-  alb, indiferent de tema aplicației.
-- **Starea dezactivată** se tratează cu o culoare explicită vizibilă
-  (`#8E8E93`) și `Opacity="1"`, nu cu estomparea implicită a WPF: pe fundal
-  închis, un text deja gri devenit 40% transparent ajunge invizibil.
-- **Culorile semantice** (succes/avertisment/eroare) sunt intenționat
-  identice în ambele teme, dar se definesc O SINGURĂ DATĂ ca resurse cu nume,
-  niciodată scrise literal pe un control.
-
-**Verificare obligatorie înainte de orice release**, în toate cele trei moduri
-(Sistem, Light, Dark), plus auditul automat (Regula 36):
-
-    ~/Developer/_gdc-tools/audit-theme-colors.sh
-
-Auditul pică build-ul dacă găsește culori literale pe controale sau ferestre
-fără fundal tematizat. Rularea lui NU înlocuiește privitul cu ochii în ambele
-teme — el prinde cauza, nu simptomul.
+> Din 2026-09-18, regulile globale stau într-un singur fișier,
+> `~/Developer/CLAUDE.md`, citit automat de Claude Code în orice proiect din
+> `~/Developer/`. Nu se mai copiază aici. Ce era specific acestui repo în fosta
+> Partea 1 (statusuri, excepții) e la finalul fișierului.
 
 ## [PARTEA 2: SPECIFICAȚII TEHNICE PROIECT]
 
@@ -724,3 +307,81 @@ descarcat = 7496 bytes de semnatura Authenticode. Link stabil
 Acest repo nu are automatizare de release (CI-ul doar compileaza + urca un
 artefact) - release-ul a fost creat manual din artefactul CI, cu ambele nume
 cerute de Regula 17 (versionat + stabil); pana acum avea doar numele stabil.
+
+### Completări specifice acestui repo, mutate din fosta Partea 1 (2026-09-18)
+
+Păstrate verbatim. Regula generală la care se referă fiecare e în
+`~/Developer/CLAUDE.md`.
+
+**Regula 7:**
+
+**7. UI Standard — varianta "Shift".** Temă dark, profesională, accent
+cald cupru/amber sau altă culoare distinctă per-aplicație. Număr de
+versiune vizibil în UI, fără excepție. Update Checker automat la lansare +
+verificare manuală.
+
+**Regula 11:**
+
+**11. Sincronizare dinamică a Standardului Master.** Orice
+adăugare/modificare a unei reguli globale din Partea 1 — indiferent din ce
+proiect pornește — devine automat noul Standard Master și TREBUIE
+propagată manual în `CLAUDE.md`-ul tuturor celorlalte proiecte. Orice
+aplicație NOUĂ primește Partea 1 completă încă din primul `CLAUDE.md`.
+
+**12-19.** Vezi `CursorPro/CLAUDE.md` (Mac) sau
+`gdc-plugin-manager-catalog-vendor/CLAUDE.md` pentru textul complet
+(Profil Utilizator/Revocare Licențe, Update Checker UX, Versionare
+semantică, fișiere descărcabile cu versiune în nume, Standard
+UX/Arhitectură aplicație nouă, Regulă Legală & Packaging UE/Global) —
+nereproduse aici cuvânt cu cuvânt ca să nu divergă fișierul; aplică-le
+identic când relevante pentru acest repo.
+
+**Regula 29:**
+
+**29. Zero informație internă în orice loc PUBLIC** (release notes GitHub,
+fișiere comise într-un repo public, commit messages vizibile). Acest repo
+e PUBLIC (`cursorpro-gdc-win`) — nimic cu nume proprii/citate/cauze de
+debugging în `gh release create`/`edit`.
+
+**Regula 31:**
+
+**31. Paritate Mac/Windows imediată, în aceeași sesiune.** Orice schimbare
+de cod pe Mac care are echivalent Windows se portează 1:1 ÎN ACEEAȘI
+SESIUNE. Excepție reală pentru acest repo (nu o abatere): funcțiile
+Desen/Zoom/Efecte de Clic/Afișare taste rapide NECESITĂ un mediu Windows
+real pentru testare (Magnification API, hook-uri de tastatură) —
+imposibil de verificat complet doar prin `dotnet build` de pe Mac. Marcat
+EXPLICIT ca "TODO paritate Windows" în CHANGELOG.md, nu ascuns. Halo +
+Spotlight AU fost portate (v1.3.0) fără mediu Windows real disponibil în
+sesiune — verificate doar prin `dotnet build`/CI (XAML→BAML real pe
+`windows-latest`), NU prin rulare efectivă; comportamentul overlay-ului
+pe hardware real (multi-monitor cu DPI diferit între ecrane, click-through
+efectiv) rămâne de confirmat de Cristi la prima rulare reală.
+
+**Regula 34:**
+
+  installer (asset de release sau folder `dist/`) — colaboratorii îl
+  importă o SINGURĂ dată în Trusted Root, apoi orice build viitor semnat
+  cu ACELAȘI certificat (persistent via secret CI, NU regenerat la
+  fiecare build — un cert nou la fiecare release ar rupe încrederea deja
+  acordată) e automat de încredere pe mașinile lor.
+- **Aplicare**: la fiecare build de release/actualizare Windows, pe orice
+  aplicație din `~/Developer/` care produce un `.exe`/installer Windows —
+  aplicată incremental, la următoarea atingere reală a fiecărui repo
+  (Regula 11), nu retroactiv peste tot dintr-o sesiune dedicată.
+- **Implementare de referință**: CGConvertor (`codesigning/sign-windows.ps1`
+  + `.github/workflows/build-windows.yml`, 2026-09-06) — portat 1:1 în
+  acest repo (`cursorpro-gdc-win`, 2026-09-06), adaptat la ținta reală de
+  build (`dotnet publish` + Inno Setup, nu PyInstaller) — vezi
+  `codesigning/README-windows.md` din acest repo pentru pașii exacți pe
+  care Cristi trebuie să-i ruleze o singură dată (încărcare secret CI,
+  certificatul comun poate fi deja generat din alt repo).
+
+**Regula 20:**
+
+GitHub.** Windows: descarcă installer-ul (`.exe`) cu `HttpClient` direct
+pe disc, redenumit cu versiunea, apoi îl lansează
+(`Process.Start(UseShellExecute:true)`) — fereastra NATIVĂ Inno Setup
+apare, NICIODATĂ browserul. Vezi `SelfUpdater.cs` (`GDCPluginManagerWin`,
+`GDCVaultWin`) ca implementare de referință. **Status acest repo: TODO,
+neportat încă** — vezi CHANGELOG.md.
