@@ -385,3 +385,10 @@ pe disc, redenumit cu versiunea, apoi îl lansează
 apare, NICIODATĂ browserul. Vezi `SelfUpdater.cs` (`GDCPluginManagerWin`,
 `GDCVaultWin`) ca implementare de referință. **Status acest repo: TODO,
 neportat încă** — vezi CHANGELOG.md.
+
+### Handoff — fișierul de stare (Regula 50, `~/Developer/CLAUDE.md`)
+
+- Fișierul de stare al acestui proiect: `PROJECT_STATE.md` (rădăcina repo-ului). La orice sesiune nouă se citește
+  ÎNTÂI el, apoi doar fragmentele strict necesare; se actualizează la milestone-uri și obligatoriu la final.
+  Dacă lipsește, se creează la prima sesiune care atinge proiectul. Repo PUBLIC: fișierul e intern, listat în `.gitignore` (doar local, Regula 29).
+- Restructurarea/ștergerea lui și orice modificare a acestui `CLAUDE.md`: doar cu diff-ul arătat și acordul lui Cristi.
