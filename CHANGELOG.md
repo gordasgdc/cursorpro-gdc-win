@@ -3,6 +3,19 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v2.0.0
+
+### Nou
+- Interfață nouă, în temă luminoasă sau întunecată, cu mărime de text reglabilă.
+- Demo gratuit: toate funcțiile, în sesiuni de 10 minute de utilizare activă, apoi 48 de ore. Licență prin donație confirmată sau acordată gratuit, pentru o zi, o lună, trei luni, un an sau fără expirare.
+- Română, engleză și spaniolă; termeni de utilizare afișați la instalare și în aplicație.
+- Actualizări verificate prin semnătură înainte de instalare.
+- Începând cu această versiune aplicația este proprietară; versiunile anterioare rămân cu condițiile cu care au fost publicate.
+
+### Windows
+- Desen, inele la clic, taste afișate, preseturi, scurtături configurabile, lupă cu conținut real și suport pentru mai multe monitoare.
+- Program de instalare semnat, cu limbile română, engleză și spaniolă; setările și licența se păstrează la dezinstalare, la cerere.
+
 ## v1.4.5 (2026-09-14) — Tema Dark/Light
 
 ### Added
