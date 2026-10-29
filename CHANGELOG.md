@@ -3,6 +3,11 @@
 Jurnal scurt, orientat spre utilizator. Complementar jurnalului tehnic
 detaliat din CLAUDE.md.
 
+## v2.1.1
+
+### Reparat
+- În Preferințe, câmpurile cererii de licență (nume, e-mail) primesc din nou textul tastat: în modul Demo, cursorul nu mai iese din câmp la fiecare secundă.
+
 ## v2.1.0
 
 ### Nou
